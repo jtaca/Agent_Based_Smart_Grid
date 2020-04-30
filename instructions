@@ -6,6 +6,7 @@ se não resultar
 instala pelo gui do anaconda num novo environment 3.7 
 networkx
 matplotlib
+osmnx
 
 instalar pelo jupyterlab no envirnment que criaste no passo anterior
 pip install pygame

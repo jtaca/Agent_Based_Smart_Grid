@@ -5,6 +5,7 @@ import simulation
 
 pygame.init()
 
+# move para os settings
 display_width = 1100
 display_height = 650
 gameDisplay = pygame.display.set_mode((display_width,display_height))
