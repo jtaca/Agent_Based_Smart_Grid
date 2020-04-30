@@ -1,0 +1,18 @@
+criar environment no anaconda testAASMA
+
+conda env create -f environment.yml
+
+se não resultar
+instala pelo gui do anaconda num novo environment 3.7 
+networkx
+matplotlib
+
+instalar pelo jupyterlab no envirnment que criaste no passo anterior
+pip install pygame
+
+se alterares alguma coisa o environmant, ex por uma biblioteca
+conda env export > environment.yml
+
+
+to run the python from the environment you set up:
+/Users/joaotiago/opt/anaconda3/envs/testAASMA/bin/python /Users/joaotiago/Desktop/SGAASMA/main.py
