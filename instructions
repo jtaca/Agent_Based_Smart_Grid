@@ -17,3 +17,16 @@ conda env export > environment.yml
 
 to run the python from the environment you set up:
 /Users/joaotiago/opt/anaconda3/envs/testAASMA/bin/python /Users/joaotiago/Desktop/SGAASMA/main.py
+
+
+
+GUI setup:
+
+$ pip install pyqt5
+
+(supostamente já deve estar instalado)
+
+$ pip install pyqt5-tool
+
+
+Para usar o designer de gui, falar com o Dani para explicar onde se encontra o designer.exe e criar um shortcut.
