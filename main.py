@@ -33,7 +33,7 @@ green = (0,200,0)
 bright_red = (255,0,0)
 bright_green = (0,255,0)
 
-
+# add save the las image 
 mapImg = pygame.image.load(place+'.png')
 
 def text_objects(text, font):
@@ -41,6 +41,10 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 def dummymap():
+    resultout = map1.reload_frame()
+    #maybe add if active simulation
+    mapImg1 = pygame.image.fromstring(resultout[0],resultout[1], "RGB")
+
     x =  (display_width * 0.25)
     y = 14 #(display_height * 0.0)
     gameDisplay.blit(mapImg, (x,y))
@@ -129,7 +133,7 @@ while not crashed:
                 Globalbenfetched = False
             else:
                 if not Globalbenfetched:
-                    dummymap()
+                    map()
                     Globalbenfetched = True
             simulation_info()
             
