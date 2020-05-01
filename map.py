@@ -5,6 +5,7 @@ import numpy as np
 import osmnx as ox
 import settings 
 import simulation
+from matplotlib import pyplot as plt
 
 import matplotlib.backends.backend_agg as agg
 
@@ -82,6 +83,11 @@ def make_plot(G):
     ax.set_clip_on(False)
     fig.set_figheight(settings.fig_height)
     fig.set_figwidth(settings.fig_height)
+    #fig = plt.figure(figsize=(settings.fig_height, settings.fig_height))
+    #fig.set_edgecolor("#04253a")
+    fig.tight_layout()
+    #fig = plt.figure(linewidth=10, edgecolor="#04253a")
+    
 
     canvas = agg.FigureCanvasAgg(fig)
     canvas.draw()
