@@ -152,7 +152,7 @@ class Ui_MainWindow(object):
     def extra(self):
         self.btn_start.setStyleSheet("background-color: green")
         self.btn_start.clicked.connect(self.click_start)
-        self.btn_step.setStyleSheet("background-color: blue")
+        self.btn_step.setStyleSheet("background-color: #1aa3ff")
         self.btn_step.clicked.connect(self.click_step)
         self.btn_stop.setStyleSheet("background-color: red")
         self.btn_stop.clicked.connect(self.click_stop)
