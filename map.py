@@ -148,7 +148,7 @@ class map:
 
         # get nearest node incident to nearest edge to reference point
         self.fig, self.ax, raw_data, size  = make_plot(self.G)
-        return raw_data, size
+        return self.fig, self.ax, raw_data, size
         #Image('{}/{}.{}'.format(self.img_folder, settings.place, self.extension), height=self.size, width=self.size)
 
     

@@ -7,6 +7,9 @@
 # WARNING! All changes made in this file will be lost!
 
 import map
+from matplotlib import pyplot as plt
+import matplotlib.backends.backend_agg as agg
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
@@ -162,6 +165,7 @@ class Ui_MainWindow(object):
         self.btn_stop.clicked.connect(self.click_stop)
 
         self.map = map.map()
+        self.reload_map()
 
 
     def click_start(self):
@@ -188,13 +192,25 @@ class Ui_MainWindow(object):
         self.label_map.setText(" ")
 
     def reload_map(self):
-        new_map = self.map.reload_frame()
-        self.map = new_map
+        reload_result = self.map.reload_frame()
+
+        ax = reload_result[1]
+
+        qimage = self.canvasToQImage(ax.figure.canvas)
 
         # how to get the image of a map
         #mapImg = pygame.image.fromstring(new_map[0], new_map[1], "RGB")
-        self.label_map.setPixmap(QtGui.QPixmap(mapImg))
 
+        self.label_map.setPixmap(QtGui.QPixmap(qimage))
+
+
+    def canvasToQImage(self, canvas):
+        data = canvas.buffer_rgba()
+        ch = 4
+        w, h = canvas.get_width_height()
+        bytesPerLine = ch * w
+        img = QtGui.QImage(data, w, h, bytesPerLine, QtGui.QImage.Format_ARGB32)
+        return img.rgbSwapped()
 
 
 
