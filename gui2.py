@@ -170,6 +170,7 @@ class Ui_MainWindow(object):
         print("start")
 
     def click_step(self):
+        self.reload_map()
         self.disp_time.setText("1")
         print("step")
 
@@ -180,7 +181,7 @@ class Ui_MainWindow(object):
 
 
     def default_map(self):
-        self.map
+        #self.map
         self.label_map.setPixmap(QtGui.QPixmap("images/Alameda_buildings.png"))
 
     def empty_map(self):
@@ -191,7 +192,7 @@ class Ui_MainWindow(object):
         self.map = new_map
 
         # how to get the image of a map
-        mapImg = pygame.image.fromstring(resultout[0],resultout[1], "RGB")
+        #mapImg = pygame.image.fromstring(new_map[0], new_map[1], "RGB")
         self.label_map.setPixmap(QtGui.QPixmap(mapImg))
 
 
