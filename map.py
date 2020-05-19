@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import osmnx as ox
 import settings 
-import simulation
+#import simulation
 from matplotlib import pyplot as plt
 
 import matplotlib.backends.backend_agg as agg
@@ -48,7 +48,7 @@ place = 'Alameda_buildings'
 point = (38.736828, -9.138222) # IST """
 
 def make_plot(G):
-        
+    # do import and draw all points
     ec = ['grey' if data['oneway'] else '#e0e0e0' for u, v, key, data in G.edges(keys=True, data=True)]
 
     #ex
@@ -144,14 +144,13 @@ class map:
 
     def reload_frame(self):
 
-
-
         # get nearest node incident to nearest edge to reference point
         self.fig, self.ax, raw_data, size  = make_plot(self.G)
         return self.fig, self.ax, raw_data, size
         #Image('{}/{}.{}'.format(self.img_folder, settings.place, self.extension), height=self.size, width=self.size)
 
-    
+    def get_map(self):
+        return self.G
 
 
 
