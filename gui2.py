@@ -2,13 +2,15 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
+import map
+from matplotlib import pyplot as plt
+import matplotlib.backends.backend_agg as agg
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -56,52 +58,44 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.btn_start.setFont(font)
         self.btn_start.setObjectName("btn_start")
-        self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox.setGeometry(QtCore.QRect(399, 99, 641, 471))
-        self.groupBox.setObjectName("groupBox")
         self.disp_time = QtWidgets.QLabel(self.centralwidget)
-        self.disp_time.setGeometry(QtCore.QRect(230, 30, 111, 31))
+        self.disp_time.setGeometry(QtCore.QRect(240, 30, 111, 31))
         self.disp_time.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.disp_time.setFont(font)
-        self.disp_time.setText("")
         self.disp_time.setTextFormat(QtCore.Qt.AutoText)
         self.disp_time.setObjectName("disp_time")
         self.disp_vehicles = QtWidgets.QLabel(self.centralwidget)
-        self.disp_vehicles.setGeometry(QtCore.QRect(230, 100, 111, 31))
+        self.disp_vehicles.setGeometry(QtCore.QRect(240, 100, 111, 31))
         self.disp_vehicles.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.disp_vehicles.setFont(font)
-        self.disp_vehicles.setText("")
         self.disp_vehicles.setTextFormat(QtCore.Qt.AutoText)
         self.disp_vehicles.setObjectName("disp_vehicles")
         self.disp_stations = QtWidgets.QLabel(self.centralwidget)
-        self.disp_stations.setGeometry(QtCore.QRect(230, 140, 111, 31))
+        self.disp_stations.setGeometry(QtCore.QRect(240, 140, 111, 31))
         self.disp_stations.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.disp_stations.setFont(font)
-        self.disp_stations.setText("")
         self.disp_stations.setTextFormat(QtCore.Qt.AutoText)
         self.disp_stations.setObjectName("disp_stations")
         self.disp_priority = QtWidgets.QLabel(self.centralwidget)
-        self.disp_priority.setGeometry(QtCore.QRect(230, 180, 111, 31))
+        self.disp_priority.setGeometry(QtCore.QRect(240, 180, 111, 31))
         self.disp_priority.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.disp_priority.setFont(font)
-        self.disp_priority.setText("")
         self.disp_priority.setTextFormat(QtCore.Qt.AutoText)
         self.disp_priority.setObjectName("disp_priority")
         self.disp_outages = QtWidgets.QLabel(self.centralwidget)
-        self.disp_outages.setGeometry(QtCore.QRect(230, 220, 111, 31))
+        self.disp_outages.setGeometry(QtCore.QRect(240, 220, 111, 31))
         self.disp_outages.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.disp_outages.setFont(font)
-        self.disp_outages.setText("")
         self.disp_outages.setTextFormat(QtCore.Qt.AutoText)
         self.disp_outages.setObjectName("disp_outages")
         self.btn_step = QtWidgets.QPushButton(self.centralwidget)
@@ -120,6 +114,10 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.btn_stop.setFont(font)
         self.btn_stop.setObjectName("btn_stop")
+        self.label_map = QtWidgets.QLabel(self.centralwidget)
+        self.label_map.setGeometry(QtCore.QRect(410, 100, 611, 471))
+        self.label_map.setText("")
+        self.label_map.setObjectName("label_map")
 
         self.extra()
 
@@ -144,12 +142,21 @@ class Ui_MainWindow(object):
         self.label_stations.setText(_translate("MainWindow", "Stations:"))
         self.label_outages.setText(_translate("MainWindow", "Power outages:"))
         self.btn_start.setText(_translate("MainWindow", "Start"))
-        self.groupBox.setTitle(_translate("MainWindow", "GroupBox"))
+        self.disp_time.setText(_translate("MainWindow", "0"))
+        self.disp_vehicles.setText(_translate("MainWindow", "0"))
+        self.disp_stations.setText(_translate("MainWindow", "0"))
+        self.disp_priority.setText(_translate("MainWindow", "0"))
+        self.disp_outages.setText(_translate("MainWindow", "0"))
         self.btn_step.setText(_translate("MainWindow", "Step"))
         self.btn_stop.setText(_translate("MainWindow", "Stop"))
 
 
     def extra(self):
+        self.disp_time.setText("0")
+        self.disp_vehicles.setText("0")
+        self.disp_stations.setText("0")
+        self.disp_priority.setText("0")
+        self.disp_outages.setText("0")
         self.btn_start.setStyleSheet("background-color: green")
         self.btn_start.clicked.connect(self.click_start)
         self.btn_step.setStyleSheet("background-color: #1aa3ff")
@@ -157,18 +164,55 @@ class Ui_MainWindow(object):
         self.btn_stop.setStyleSheet("background-color: red")
         self.btn_stop.clicked.connect(self.click_stop)
 
+        self.map = map.map()
+        self.reload_map()
+
 
     def click_start(self):
+        self.default_map()
         self.disp_time.setText("0")
         print("start")
 
     def click_step(self):
+        self.reload_map()
         self.disp_time.setText("1")
         print("step")
 
     def click_stop(self):
+        self.empty_map()
         self.disp_time.setText("2")
         print("stop")
+
+
+    def default_map(self):
+        #self.map
+        self.label_map.setPixmap(QtGui.QPixmap("images/Alameda_buildings.png"))
+
+    def empty_map(self):
+        self.label_map.setText(" ")
+
+    def reload_map(self):
+        reload_result = self.map.reload_frame()
+
+        ax = reload_result[1]
+
+        qimage = self.canvasToQImage(ax.figure.canvas)
+
+        # how to get the image of a map
+        #mapImg = pygame.image.fromstring(new_map[0], new_map[1], "RGB")
+
+        self.label_map.setPixmap(QtGui.QPixmap(qimage))
+
+
+    def canvasToQImage(self, canvas):
+        data = canvas.buffer_rgba()
+        ch = 4
+        w, h = canvas.get_width_height()
+        bytesPerLine = ch * w
+        img = QtGui.QImage(data, w, h, bytesPerLine, QtGui.QImage.Format_ARGB32)
+        return img.rgbSwapped()
+
+
 
 if __name__ == "__main__":
     import sys
@@ -178,3 +222,10 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+
+'''
+def image_map(map):
+    resultout = map.reload_frame()
+    #maybe add if active simulation
+    mapImg = pygame.image.fromstring(resultout[0],resultout[1], "RGB")
+'''
