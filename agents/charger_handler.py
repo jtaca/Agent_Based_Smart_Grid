@@ -3,8 +3,8 @@ import agents.geographic_agent
 
 class charger_handler(agents.geographic_agent.geographic_agent):
 
-	def __init__(self,lat,lng, G):
+	def __init__(self,lat,lng, map):
 		agents.geographic_agent.geographic_agent.__init__(self,lat,lng, G)
 		self.name = "charger handler"
-		self.grid = G
+		self.map = map
 
