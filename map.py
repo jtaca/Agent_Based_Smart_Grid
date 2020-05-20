@@ -47,7 +47,7 @@ listp=[library,museum]
 place = 'Alameda_buildings'
 point = (38.736828, -9.138222) # IST """
 
-def make_plot(G, agent_list = []):
+def make_plot(self,G):
     # do import and draw all points
     ec = ['grey' if data['oneway'] else '#e0e0e0' for u, v, key, data in G.edges(keys=True, data=True)]
 
@@ -62,28 +62,25 @@ def make_plot(G, agent_list = []):
 
     #generate random agent in map
     
-    nodes, _ = ox.graph_to_gdfs(G)
-    lng = random.uniform(nodes['x'].min(), nodes['x'].max())
-    lat = random.uniform(nodes['y'].min(),nodes['y'].max())
-    geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
-    nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+    
 
-    print(lat)
-    print(lng)
+    for agent in self.agent_list:
+       
+        if agent.name == "energy broker":
+            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='X')
+        elif agent.name == "driver assistant":
+            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='o')
+        elif agent.name == "charger handler":
+            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')
+        else:
+            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
 
-    for agent in agent_list:
-        ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
         #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
-
-
-
-    ax.scatter(lng, lat, c='r', marker='x')
-    ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
-
-   
+    #ax.scatter(lng, lat, c='r', marker='x')
+    #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
     # get nearest node incident to nearest edge to reference point
-    geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
-    nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+    #geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
+    #nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
    
 
 
@@ -139,10 +136,13 @@ class map:
         self.min_y=nodes['y'].min()
         print(self.max_x)
         print(self.max_y)
+        self.agent_list = []
+        self.da_list = []
+        self.ch_list = []
 
         #generate random agent in map
-        x = random.uniform(self.min_x, self.max_x)
-        y = random.uniform(self.min_y, self.max_y)
+        #x = random.uniform(self.min_x, self.max_x)
+        #y = random.uniform(self.min_y, self.max_y)
 
 
         #plt.savefig(settings.place)
@@ -155,19 +155,47 @@ class map:
 
         #print(settings.point)
 
+    def add_agents(self,agent_list):
+        self.agent_list = agent_list
+        self.da_list = []
+        self.ch_list = []
+        for agent in self.agent_list:
+            if agent.name == "driver assistant":
+                self.da_list.append(agent)
+            elif agent.name == "charger handler":
+                self.ch_list.append(agent)
 
-    def reload_frame(self, agent_list=[]):
+
+    def reload_frame(self):
 
         # get nearest node incident to nearest edge to reference point
-        self.fig, self.ax, raw_data, size  = make_plot(self.G, agent_list)
+        self.fig, self.ax, raw_data, size  = make_plot(self,self.G)
         return self.fig, self.ax, raw_data, size
         #Image('{}/{}.{}'.format(self.img_folder, settings.place, self.extension), height=self.size, width=self.size)
 
     def get_map(self):
         return self.G
+    
+    def get_random_point(self):
+        nodes, _ = ox.graph_to_gdfs(self.G)
+        lng = random.uniform(nodes['x'].min(), nodes['x'].max())
+        lat = random.uniform(nodes['y'].min(),nodes['y'].max())
 
+        print("random_point: "+str(lat)+" , "+str(lng))
 
+        return lng, lat
 
+    def get_random_node(self):
+        nodes, _ = ox.graph_to_gdfs(self.G)
+        lng = random.uniform(nodes['x'].min(), nodes['x'].max())
+        lat = random.uniform(nodes['y'].min(),nodes['y'].max())
+
+        geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
+        nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+
+        print("random_point: "+lat+" , "+lng)
+
+        return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 
         
 
