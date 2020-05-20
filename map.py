@@ -65,7 +65,7 @@ def make_plot(G, agent_list = []):
     nodes, _ = ox.graph_to_gdfs(G)
     lng = random.uniform(nodes['x'].min(), nodes['x'].max())
     lat = random.uniform(nodes['y'].min(),nodes['y'].max())
-    geom, u, v = ox.get_nearest_edge(G, (lat, lng))
+    geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
     nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
 
     print(lat)
@@ -82,7 +82,7 @@ def make_plot(G, agent_list = []):
 
    
     # get nearest node incident to nearest edge to reference point
-    geom, u, v = ox.get_nearest_edge(G, (lat, lng))
+    geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
     nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
    
 
