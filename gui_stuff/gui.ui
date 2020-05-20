@@ -133,23 +133,10 @@
      <string>Start</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
-    <property name="geometry">
-     <rect>
-      <x>399</x>
-      <y>99</y>
-      <width>641</width>
-      <height>471</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>GroupBox</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="disp_time">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>30</y>
       <width>111</width>
       <height>31</height>
@@ -167,7 +154,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -176,7 +163,7 @@
    <widget class="QLabel" name="disp_vehicles">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>100</y>
       <width>111</width>
       <height>31</height>
@@ -194,7 +181,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -203,7 +190,7 @@
    <widget class="QLabel" name="disp_stations">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>140</y>
       <width>111</width>
       <height>31</height>
@@ -221,7 +208,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -230,7 +217,7 @@
    <widget class="QLabel" name="disp_priority">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>180</y>
       <width>111</width>
       <height>31</height>
@@ -248,7 +235,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -257,7 +244,7 @@
    <widget class="QLabel" name="disp_outages">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>220</y>
       <width>111</width>
       <height>31</height>
@@ -275,7 +262,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
+     <string>0</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -319,6 +306,19 @@
     </property>
     <property name="text">
      <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_map">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>100</y>
+      <width>611</width>
+      <height>471</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
