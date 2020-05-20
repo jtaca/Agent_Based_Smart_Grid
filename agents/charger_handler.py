@@ -8,4 +8,3 @@ class charger_handler(agents.geographic_agent.geographic_agent):
 		self.name = "charger handler"
 		self.grid = G
 
-	def 
