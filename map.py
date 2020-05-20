@@ -47,7 +47,7 @@ listp=[library,museum]
 place = 'Alameda_buildings'
 point = (38.736828, -9.138222) # IST """
 
-def make_plot(G):
+def make_plot(G, agent_list = []):
     # do import and draw all points
     ec = ['grey' if data['oneway'] else '#e0e0e0' for u, v, key, data in G.edges(keys=True, data=True)]
 
@@ -56,27 +56,41 @@ def make_plot(G):
     #lat = 38.7414116
     #lng = -9.143627785022142
 
+    fig, ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+    filename=settings.place)
 
-    nodes, _ = ox.graph_to_gdfs(G)
 
     #generate random agent in map
+    
+    nodes, _ = ox.graph_to_gdfs(G)
     lng = random.uniform(nodes['x'].min(), nodes['x'].max())
     lat = random.uniform(nodes['y'].min(),nodes['y'].max())
+    geom, u, v = ox.get_nearest_edge(G, (lat, lng))
+    nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+
     print(lat)
     print(lng)
 
-
-    # get nearest node incident to nearest edge to reference point
-    geom, u, v = ox.get_nearest_edge(G, (lat, lng))
-    nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
-   
-    fig, ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
-    filename=settings.place)
+    for agent in agent_list:
+        ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+        #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
 
 
 
     ax.scatter(lng, lat, c='r', marker='x')
     ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
+
+   
+    # get nearest node incident to nearest edge to reference point
+    geom, u, v = ox.get_nearest_edge(G, (lat, lng))
+    nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+   
+
+
+
+
+    
+    
 
     #plt.savefig(settings.place)
     ax.set_frame_on(False)
@@ -142,10 +156,10 @@ class map:
         #print(settings.point)
 
 
-    def reload_frame(self):
+    def reload_frame(self, agent_list=[]):
 
         # get nearest node incident to nearest edge to reference point
-        self.fig, self.ax, raw_data, size  = make_plot(self.G)
+        self.fig, self.ax, raw_data, size  = make_plot(self.G, agent_list)
         return self.fig, self.ax, raw_data, size
         #Image('{}/{}.{}'.format(self.img_folder, settings.place, self.extension), height=self.size, width=self.size)
 
