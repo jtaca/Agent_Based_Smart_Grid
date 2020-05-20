@@ -150,6 +150,11 @@ class Ui_MainWindow(object):
 
 
     def extra(self):
+        self.disp_time.setText("0")
+        self.disp_vehicles.setText("0")
+        self.disp_stations.setText("0")
+        self.disp_priority.setText("0")
+        self.disp_outages.setText("0")
         self.btn_start.setStyleSheet("background-color: green")
         self.btn_start.clicked.connect(self.click_start)
         self.btn_step.setStyleSheet("background-color: #1aa3ff")
