@@ -16,7 +16,7 @@ class geographic_agent:
         def get_closest_node(self,G ):
             nodes, _ = ox.graph_to_gdfs(G)
 
-            geom, u, v = ox.get_nearest_edge(G, (self.lat, self.lng))
+            geom, u, v, marosca = ox.get_nearest_edge(G, (self.lat, self.lng))
             nn = min((u, v), key=lambda n: ox.great_circle_vec(self.lat, self.lng, G.nodes[n]['y'], G.nodes[n]['x']))
 
             return G.nodes[nn]['x'], G.nodes[nn]['y']
