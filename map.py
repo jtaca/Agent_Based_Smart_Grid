@@ -66,15 +66,24 @@ def make_plot(self,G):
 
     for agent in self.agent_list:
        
-        if agent.name == "energy broker":
-            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='X')
-        elif agent.name == "driver assistant":
-            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='o')
-        elif agent.name == "charger handler":
-            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')
-        else:
-            ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+        try:
+            if agent.name == "energy broker":
+                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 100)
+            elif agent.name == "driver assistant":
+                #if agent.is_priority:
+                    #ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o')#o
+                #else:
+                    ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o')#o
 
+            elif agent.name == "charger handler":
+                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')#v
+            elif agent.name == "power operative":
+                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='k', marker='$P$', s = 100)#v
+            else:
+                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+        except:
+             ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+             
         #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
     #ax.scatter(lng, lat, c='r', marker='x')
     #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
@@ -160,10 +169,13 @@ class map:
         self.da_list = []
         self.ch_list = []
         for agent in self.agent_list:
-            if agent.name == "driver assistant":
-                self.da_list.append(agent)
-            elif agent.name == "charger handler":
-                self.ch_list.append(agent)
+            try:
+                if agent.name == "driver assistant":
+                    self.da_list.append(agent)
+                elif agent.name == "charger handler":
+                    self.ch_list.append(agent)
+            except:
+                print("a weird agent got into the map")
 
 
     def reload_frame(self):
