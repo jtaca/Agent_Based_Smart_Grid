@@ -3,7 +3,7 @@ import geographic_agent
 class power_operative(geographic_agent.geographic_agent):
 
 		def __init__(self,lat,lng, storage_available):
-				geographic_agent.geographic_agent.__init__(self,lat,lng)
+				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', '$P$', 100,2)
 				self.name = "power operative"
 				self.acumulated_energy = 0
 				self.storage_available = storage_available

@@ -6,6 +6,7 @@ import time
 import threading
 import numpy as np
 import networkx as nx
+import settings
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
 
@@ -38,13 +39,8 @@ class simulation():
                 tick_range.append(i) 
             self.step_of_redistribuition = random.sample(tick_range, self.number_redistribuition)
             print(self.step_of_redistribuition)
-        """ for i in range(self.number_disasters):
-            c = random.choice(tick_range)
-            tick_range.remove(c)
-            print(tick_range)
-            self.step_of_disaster.append(c) """
         print(self.number_priority_vehicles)
-        self.step_time_sec = 500
+        self.step_time_sec = 1
         self.agent_list = []
         #storage available for PO
         self.storage_available = self.standard_batery_size*(self.number_vehicles/3) 
@@ -141,7 +137,8 @@ class simulation():
             except:
                 print("Route couldn't be created.... Retrying")
         
-        c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1)
+        is_priority = True
+        c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1, is_priority)
         
         #lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
@@ -200,7 +197,7 @@ class simulation():
         
             
     
-    def One_DA_N_CH(N):
+    def One_DA_N_CH(self,N):
         self.architecture = "1 DA; N CH; 1 PO; 1 EB"
         pass
 
@@ -258,11 +255,11 @@ class simulation():
             
         gui.disp_time.setText("Complete")
 
-    def One_DA_One_CH(N):
+    def One_DA_One_CH(self, N):
         self.architecture = "1 DA; 1 CH; 1 PO; 1 EB"
         pass
 
-    def N_DA_One_CH(N):
+    def N_DA_One_CH(self,N):
         self.architecture = "N DA; 1 CH; 1 PO; 1 EB"
         pass
 
