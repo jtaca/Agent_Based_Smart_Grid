@@ -63,11 +63,11 @@ def make_plot(self,G):
         
         try:
             if agent.name == "energy broker":
-                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 100)
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 200)
             elif agent.name == "driver assistant":
-                #if agent.is_priority:
-                    #ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o')#o
-                #else:
+                if agent.is_priority:
+                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o')#o
+                else:
                     self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o')#o
 
             elif agent.name == "charger handler":
