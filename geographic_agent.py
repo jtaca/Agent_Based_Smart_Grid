@@ -2,13 +2,14 @@ import osmnx as ox
 
 class geographic_agent:
     
-        def __init__(self, lat, lng, get_color,get_marker, get_size):
+        def __init__(self, lat, lng, get_color,get_marker, get_size, get_zorder):
             self.lng = lng
             self.lat = lat
             #for the map
             self.get_color = get_color
             self.get_marker = get_marker
             self.get_size = get_size
+            self.get_zorder = get_zorder
 
         def get_latitude(self):
             return self.lat

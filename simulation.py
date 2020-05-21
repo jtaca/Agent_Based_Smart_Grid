@@ -6,6 +6,7 @@ import time
 import threading
 import numpy as np
 import networkx as nx
+import settings
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
 

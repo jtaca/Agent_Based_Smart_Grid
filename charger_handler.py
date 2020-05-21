@@ -4,7 +4,7 @@ import geographic_agent
 class charger_handler(geographic_agent.geographic_agent):
 
 	def __init__(self,lat,lng, map, energy_price_buy,energy_price_sell):
-		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20)
+		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
 		self.map = map

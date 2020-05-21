@@ -30,9 +30,9 @@ class driver_assistant(geographic_agent.geographic_agent):
 		self.lng = self.G.nodes[origin]['x']
 		self.lat = self.G.nodes[origin]['y']
 		if is_priority:
-			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'b','o',10)
+			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'b','o',10,3)
 		else:
-			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'g','o',10)
+			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'g','o',10,3)
 		
 
 	def animate(self):
