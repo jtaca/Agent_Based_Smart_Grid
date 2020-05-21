@@ -98,6 +98,7 @@ class simulation():
         gui.disp_vehicles.setText(str(self.number_vehicles))
         gui.disp_stations.setText(str(self.number_stations))
         gui.disp_priority.setText(str(self.number_priority_vehicles))
+        map1.clean_map()
 
         listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
         gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
@@ -142,9 +143,9 @@ class simulation():
         #thread.start()
         for current_step in range(self.steps):
 
-            #lng, lat = map1.get_random_node()
-            #agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
-            #map1.add_agents(agent_list)
+            lng, lat = map1.get_random_node()
+            agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
+            map1.add_agents(agent_list)
 
             a.act()
 
