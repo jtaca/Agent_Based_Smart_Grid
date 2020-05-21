@@ -9,25 +9,26 @@ import networkx as nx
 import settings
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
+from matplotlib import pyplot as plt
 
 
 class simulation():
 
     def __init__(self):
         self.stop = 0
-        self.steps = 10
-        self.number_vehicles = 20
-        self.number_priority_vehicles = random.choice(range(self.number_vehicles)) #7
-        self.number_stations = 2
-        self.number_disasters = 3  #to generate the disaster pick an int between 0 and number of stepps
+        self.steps = settings.simulation_time
+        self.number_vehicles = settings.nr_vehicles
+        self.number_priority_vehicles = settings.nr_priority_vehicles #random.choice(range(self.number_vehicles)) #7
+        self.number_stations = settings.nr_stations
+        self.number_disasters = settings.nr_disasters  #to generate the disaster pick an int between 0 and number of stepps
         self.step_of_disaster = []# we have to generate the impact of the disaster randomly
-        self.number_redistribuition = 7  #to generate the redistribuition pick an int between 0 and number of stepps
+        self.number_redistribuition = settings.nr_redistribution  #to generate the redistribuition pick an int between 0 and number of stepps
         self.step_of_redistribuition = []# we have to generate the impact of the redistribuition randomly
-        self.max_flactuation = 1 # if we put min and max equal the flactuation is the same every time
-        self.min_flactuation = 0.6
-        self.standard_batery_size = 5000 # this can flactuate per car
-        self.total_energy_of_tick = self.number_vehicles*self.standard_batery_size
-        self.total_evergy_of_simulation = self.steps*self.total_energy_of_tick 
+        self.max_flactuation = settings.max_source_flactuation # if we put min and max equal the flactuation is the same every time
+        self.min_flactuation = settings.min_source_flactuation
+        self.standard_batery_size = settings.standard_batery_size # this can flactuate per car
+        self.total_energy_of_tick = settings.total_energy_of_tick #self.number_vehicles*self.standard_batery_size
+        self.total_evergy_of_simulation = settings.total_evergy_of_simulation#self.steps*self.total_energy_of_tick 
         tick_range = []
         if self.number_disasters>0 or self.number_redistribuition>0:
             for i in range(self.steps):
@@ -40,12 +41,12 @@ class simulation():
             self.step_of_redistribuition = random.sample(tick_range, self.number_redistribuition)
             print(self.step_of_redistribuition)
         print(self.number_priority_vehicles)
-        self.step_time_sec = 1
+        self.step_time_sec = settings.step_time_milisec
         self.agent_list = []
         #storage available for PO
         self.storage_available = self.standard_batery_size*(self.number_vehicles/3) 
-        self.energy_price_buy = 0.002
-        self.energy_price_sell = 0.01
+        self.energy_price_buy = settings.energy_price_buy
+        self.energy_price_sell = settings.energy_price_sell
         self.current_step = 0
         self.architecture = "Not yet chosen"
 
@@ -77,21 +78,30 @@ class simulation():
         gui.disp_time.setText("Complete")
         print("Complete")
 
+    def plot(self, x,y):
+        fig_energy, ax_energy = plt.subplots()
+        #xerr = 5000*np.random.random_sample(20)
+        yerr = (max(y)/4)*np.random.random_sample(len(y))
+        ax_energy.errorbar(x, y,yerr=yerr,fmt='-o')
+        plt.axis([0, max(x), 0, (max(y)+max(yerr))])
+        plt.ylabel('Energy available from source')
+        plt.xlabel('Step')
+        plt.savefig('graphs/Energy_Available_history.png')
+
     def graph(self,agent_list):
         for agent in agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
+                self.plot(list(range(self.steps)), self.energy_history)
                 break
             else:
                 self.energy_history = "energy_history not found"
-
-        print(self.energy_history)
-        #graph this series 
-        #https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html
+        #print(self.energy_history)
         
 
     def test(self,map1,gui):
         self.architecture = "Test"
+        self.current_step = 0
         #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
         #print(b.get_latitude())
         
@@ -158,7 +168,7 @@ class simulation():
 
         map1.add_agents(agent_list)
 
-        self.current_step = 0
+        
         
         def worker():
             #last_step = 0
