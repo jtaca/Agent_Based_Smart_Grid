@@ -1,9 +1,9 @@
-import agents.geographic_agent
+import geographic_agent
 
-class power_operative(agents.geographic_agent.geographic_agent):
+class power_operative(geographic_agent.geographic_agent):
 
 		def __init__(self,lat,lng, storage_available):
-				agents.geographic_agent.geographic_agent.__init__(self,lat,lng)
+				geographic_agent.geographic_agent.__init__(self,lat,lng)
 				self.name = "power operative"
 				self.acumulated_energy = 0
 				self.storage_available = storage_available

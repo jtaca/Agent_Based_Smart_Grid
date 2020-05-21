@@ -1,11 +1,11 @@
-import agents.geographic_agent
+import geographic_agent
 import random
 
 
-class energy_broker(agents.geographic_agent.geographic_agent):
+class energy_broker(geographic_agent.geographic_agent):
 
     def __init__(self,lat,lng, step_of_disaster, total_energy_of_tick, total_evergy_of_simulation , simulation, step_of_redistribuition, min_flactuation, max_flactuation):
-        agents.geographic_agent.geographic_agent.__init__(self,lat,lng)
+        geographic_agent.geographic_agent.__init__(self,lat,lng)
         self.name = "energy broker"
         self.step_of_disaster = step_of_disaster
         self.step_of_redistribuition = step_of_redistribuition
@@ -23,7 +23,7 @@ class energy_broker(agents.geographic_agent.geographic_agent):
         if self.simulation.current_step in self.step_of_disaster:
             self.do_power_outage()
             aux_is_outage = True
-        if self.simulation.current_step in self.step_of_redistribuition and  not aux_is_outage:
+        elif self.simulation.current_step in self.step_of_redistribuition and  not aux_is_outage:
             self.do_power_redistribution()
 
         self.concede_energy_to_po()
@@ -34,8 +34,6 @@ class energy_broker(agents.geographic_agent.geographic_agent):
     def do_power_outage(self):
         print("outage")
         self.energy_available = 0
-        self.flactuation_min = 0
-        self.flactuation_max = 0
         pass
     
     def do_power_redistribution(self): 

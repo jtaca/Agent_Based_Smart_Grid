@@ -1,4 +1,4 @@
-import agents.geographic_agent
+import geographic_agent
 
 import map
 
@@ -7,28 +7,32 @@ import numpy as np
 import osmnx as ox
 import matplotlib
 
-class driver_assistant(agents.geographic_agent.geographic_agent):
+class driver_assistant(geographic_agent.geographic_agent):
 
 	def __init__(self, origin, route, battery, map):
-		#agents.geographic_agent.geographic_agent.__init__(self,lat,lng)
+
+		
+
 		self.name = "driver assistant"
 		self.batery = battery
 		self.velocity = 0
 		self.accelaration = 0
-		
+
 		#Agent has the map
 		self.map = map
 		self.G = map.get_map()
-		
+
 		#Route and Coordenates
 		self.route = route
 		self.current_node = origin
-		self.current_x = self.G.nodes[origin]['x']
-		self.current_y = self.G.nodes[origin]['y']
-
+		self.lng = self.G.nodes[origin]['x']
+		self.lat = self.G.nodes[origin]['y']
+		geographic_agent.geographic_agent.__init__( self, self.lat , self.lng)
 
 	def animate(self):
 		pass
+
+
 
 
 def get_route(G, origin, destination):
@@ -122,10 +126,10 @@ def path_decompiler(lines):
     return clean_path
 
 #Help Functions
-	
+
 		#ox.plot_graph(G, fig_height=10, fig_width=10, edge_color="black")
 
-		
+
 		#---DEPRACATED---
 		#A = self.map.get_random_node()
 		#B = self.map.get_random_node()
@@ -135,7 +139,3 @@ def path_decompiler(lines):
 		#xA = G.nodes[A]['x']
 		#ox.plot_graph_route(G, route, fig_height=10, fig_width=10)
 		#ox.plot_graph_routes(self.G, self.route)
-
-		
-
-

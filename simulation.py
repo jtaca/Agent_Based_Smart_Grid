@@ -1,6 +1,6 @@
 import settings 
 import map
-from agents import charger_handler,driver_assistant,energy_broker,power_operative, geographic_agent
+import charger_handler,driver_assistant,energy_broker,power_operative, geographic_agent
 import random
 import time
 import threading
@@ -24,7 +24,7 @@ class simulation():
         self.step_of_redistribuition = []# we have to generate the impact of the redistribuition randomly
         self.max_flactuation = 1 # if we put min and max equal the flactuation is the same every time
         self.min_flactuation = 0.6
-        self.standard_batery_size = 5000
+        self.standard_batery_size = 5000 # this can flactuate per car
         self.total_energy_of_tick = self.number_vehicles*self.standard_batery_size
         self.total_evergy_of_simulation = self.steps*self.total_energy_of_tick 
         tick_range = []
@@ -44,13 +44,14 @@ class simulation():
             print(tick_range)
             self.step_of_disaster.append(c) """
         print(self.number_priority_vehicles)
-        self.step_time_sec = 1
+        self.step_time_sec = 500
         self.agent_list = []
         #storage available for PO
         self.storage_available = self.standard_batery_size*(self.number_vehicles/3) 
         self.energy_price_buy = 0.002
         self.energy_price_sell = 0.01
         self.current_step = 0
+        self.architecture = "Not yet chosen"
 
         #stats for simulation results
         self.profit_margin = [] #costof mantaining vs money made
@@ -60,6 +61,7 @@ class simulation():
         self.number_comunications = []
         #has values per each tick/step
         self.energy_history = []
+    
 
         
 
@@ -93,7 +95,7 @@ class simulation():
         
 
     def test(self,map1,gui):
-        
+        self.architecture = "Test"
         #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
         #print(b.get_latitude())
         
@@ -119,27 +121,27 @@ class simulation():
         no_route = True
         A = None
         while no_route:
-			try:
-				# A->B
-				A = np.random.choice(self.G.nodes)
-				B = np.random.choice(self.G.nodes)
-				r = nx.shortest_path(self.G, A, B, weight='length')
-				route.append(r)
-				
-				# B->C
-				C = np.random.choice(self.G.nodes)
-				r = nx.shortest_path(self.G, B, C, weight='length')
-				route.append(r)
+            try:
+                # A->B
+                A = np.random.choice(map1.G.nodes)
+                B = np.random.choice(map1.G.nodes)
+                r = nx.shortest_path(map1.G, A, B, weight='length')
+                route.append(r)
 
-				# C->A
-				r = nx.shortest_path(self.G, C, A, weight='length')
-				route.append(r)
+                # B->C
+                C = np.random.choice(map1.G.nodes)
+                r = nx.shortest_path(map1.G, B, C, weight='length')
+                route.append(r)
 
-				no_route = False
-			except:
-				print("Route couldn't be created.... Retrying")
+                # C->A
+                r = nx.shortest_path(map1.G, C, A, weight='length')
+                route.append(r)
+
+                no_route = False
+            except:
+                print("Route couldn't be created.... Retrying")
         
-        c = driver_assistant.driver_assistant(A, route, 100, map1)
+        c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1)
         
         #lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
@@ -154,7 +156,7 @@ class simulation():
         agent_list = []
         agent_list.append(a)
         agent_list.append(b)
-        #agent_list.append(c)
+        agent_list.append(c)
         agent_list.append(d)
 
         map1.add_agents(agent_list)
@@ -173,9 +175,9 @@ class simulation():
         #thread.start()
         for current_step in range(self.steps):
 
-            lng, lat = map1.get_random_node()
-            agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
-            map1.add_agents(agent_list)
+            #lng, lat = map1.get_random_node()
+            #agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
+            #map1.add_agents(agent_list)
 
             a.act()
 
@@ -199,9 +201,11 @@ class simulation():
             
     
     def One_DA_N_CH(N):
+        self.architecture = "1 DA; N CH; 1 PO; 1 EB"
         pass
 
     def N_DA_N_CH(self,map1,gui):
+        self.architecture = "N DA; N CH; 1 PO; 1 EB"
 
         gui.disp_vehicles.setText(str(self.number_vehicles))
         gui.disp_stations.setText(str(self.number_stations))
@@ -255,9 +259,11 @@ class simulation():
         gui.disp_time.setText("Complete")
 
     def One_DA_One_CH(N):
+        self.architecture = "1 DA; 1 CH; 1 PO; 1 EB"
         pass
 
     def N_DA_One_CH(N):
+        self.architecture = "N DA; 1 CH; 1 PO; 1 EB"
         pass
 
     def stop(self):
