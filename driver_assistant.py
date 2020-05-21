@@ -18,6 +18,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 		self.velocity = 0
 		self.accelaration = 0
 		self.is_priority = is_priority
+		
 
 		#Agent has the map
 		self.map = map
@@ -28,7 +29,11 @@ class driver_assistant(geographic_agent.geographic_agent):
 		self.current_node = origin
 		self.lng = self.G.nodes[origin]['x']
 		self.lat = self.G.nodes[origin]['y']
-		geographic_agent.geographic_agent.__init__( self, self.lat , self.lng)
+		if is_priority:
+			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'b','o',10)
+		else:
+			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'g','o',10)
+		
 
 	def animate(self):
 		pass

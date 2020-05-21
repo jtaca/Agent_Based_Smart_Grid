@@ -60,24 +60,27 @@ def make_plot(self,G):
     filename=settings.place)
 
     for agent in self.agent_list:
-        
         try:
-            if agent.name == "energy broker":
+            self.ax.scatter(agent.get_longitude(), agent.get_latitude(), 
+            c= agent.get_color, marker=agent.get_marker, s = agent.get_size)
+        except:
+             self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10) 
+
+        """   if agent.name == "energy broker":
                 self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 200)
             elif agent.name == "driver assistant":
                 if agent.is_priority:
-                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o')#o
+                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o', s = 10)#o
                 else:
-                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o')#o
+                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o', s = 10)#o
 
             elif agent.name == "charger handler":
-                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')#v
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v',s = 10)#v
             elif agent.name == "power operative":
                 self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='k', marker='$P$', s = 100)#v
             else:
-                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
-        except:
-             self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10)"""
+        
              
         #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
     #ax.scatter(lng, lat, c='r', marker='x')

@@ -5,7 +5,7 @@ import random
 class energy_broker(geographic_agent.geographic_agent):
 
     def __init__(self,lat,lng, step_of_disaster, total_energy_of_tick, total_evergy_of_simulation , simulation, step_of_redistribuition, min_flactuation, max_flactuation):
-        geographic_agent.geographic_agent.__init__(self,lat,lng)
+        geographic_agent.geographic_agent.__init__(self,lat,lng,'y', '$EB$', 200)
         self.name = "energy broker"
         self.step_of_disaster = step_of_disaster
         self.step_of_redistribuition = step_of_redistribuition
