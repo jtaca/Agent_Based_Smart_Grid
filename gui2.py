@@ -186,6 +186,7 @@ class Ui_MainWindow(object):
     def click_stop(self):
         self.empty_map()
         self.disp_time.setText("2")
+        self.sim.stop()
         print("stop")
 
 
