@@ -1,4 +1,5 @@
-import geographic_agent
+import agents.geographic_agent
+
 import map
 
 import networkx as nx
@@ -6,7 +7,7 @@ import numpy as np
 import osmnx as ox
 import matplotlib
 
-class driver_assistant(geographic_agent.geographic_agent):
+class driver_assistant(agents.geographic_agent.geographic_agent):
 
 	def __init__(self,lat,lng, battery):
 		#agents.geographic_agent.geographic_agent.__init__(self,lat,lng)

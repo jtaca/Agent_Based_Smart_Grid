@@ -14,7 +14,7 @@ class simulation():
         self.stop = 0
         self.steps = 10
         self.number_vehicles = 20
-        self.number_priority_vehicles = random.choice(range(self.number_vehicles))
+        self.number_priority_vehicles = random.choice(range(self.number_vehicles)) #7
         self.number_stations = 2
         self.number_disasters = 3  #to generate the disaster pick an int between 0 and number of stepps
         self.step_of_disaster = []# we have to generate the impact of the disaster randomly
@@ -105,8 +105,8 @@ class simulation():
 
         lng, lat = map1.get_random_point()
         a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
-        print(a.get_latitude())
-        print(a.get_closest_node(map1.get_map()))
+        #print(a.get_latitude())
+        #print(a.get_closest_node(map1.get_map()))
 
         lng, lat = map1.get_random_point()
         b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
