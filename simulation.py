@@ -12,21 +12,30 @@ class simulation():
 
     def __init__(self):
         self.stop = 0
-        self.steps = 100
+        self.steps = 10
         self.number_vehicles = 20
         self.number_priority_vehicles = random.choice(range(self.number_vehicles))
         self.number_stations = 2
-        self.number_disasters = 0  #to generate the disaster pich an int between 0 and number of stepps
+        self.number_disasters = 3  #to generate the disaster pick an int between 0 and number of stepps
         self.step_of_disaster = []# we have to generate the impact of the disaster randomly
+        self.number_redistribuition = 7  #to generate the redistribuition pick an int between 0 and number of stepps
+        self.step_of_redistribuition = []# we have to generate the impact of the redistribuition randomly
+        self.max_flactuation = 1 # if we put min and max equal the flactuation is the same every time
+        self.min_flactuation = 0.6
         self.standard_batery_size = 5000
         self.total_energy_of_tick = self.number_vehicles*self.standard_batery_size
         self.total_evergy_of_simulation = self.steps*self.total_energy_of_tick 
         tick_range = []
-        if self.number_disasters>0:
+        if self.number_disasters>0 or self.number_redistribuition>0:
             for i in range(self.steps):
                 tick_range.append(i) 
             self.step_of_disaster = random.sample(tick_range, self.number_disasters)
             print(self.step_of_disaster)
+
+            for i in range(self.steps):
+                tick_range.append(i) 
+            self.step_of_redistribuition = random.sample(tick_range, self.number_redistribuition)
+            print(self.step_of_redistribuition)
         """ for i in range(self.number_disasters):
             c = random.choice(tick_range)
             tick_range.remove(c)
@@ -39,6 +48,7 @@ class simulation():
         self.storage_available = self.standard_batery_size*(self.number_vehicles/3) 
         self.energy_price_buy = 0.002
         self.energy_price_sell = 0.01
+        self.current_step = 0
 
         #stats for simulation results
         self.profit_margin = [] #costof mantaining vs money made
@@ -47,9 +57,38 @@ class simulation():
         ##must add method calculate time to charge in DA
         self.number_comunications = []
         #has values per each tick/step
+        self.energy_history = []
+
         
 
         pass
+
+
+    def update(self,current_step, gui):
+        loop = QEventLoop()
+        QTimer.singleShot(self.step_time_sec, loop.quit)
+        loop.exec_()
+        self.current_step = current_step
+        print(self.current_step)
+        gui.disp_time.setText(str(self.current_step))
+        gui.reload_map()
+
+    def end(self, gui):
+        gui.disp_time.setText("Complete")
+        print("Complete")
+
+    def graph(self,agent_list):
+        for agent in agent_list:
+            if agent.name == "energy broker":
+                self.energy_history = agent.energy_history
+                break
+            else:
+                self.energy_history = "energy_history not found"
+
+        print(self.energy_history)
+        #graph this series 
+        #https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html
+        
 
     def test(self,map1,gui):
         
@@ -64,7 +103,7 @@ class simulation():
         gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
 
         lng, lat = map1.get_random_point()
-        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation)
+        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
         print(a.get_latitude())
         print(a.get_closest_node(map1.get_map()))
 
@@ -89,7 +128,7 @@ class simulation():
 
         map1.add_agents(agent_list)
 
-        self.curret_step = 0
+        self.current_step = 0
         
         def worker():
             #last_step = 0
@@ -101,43 +140,35 @@ class simulation():
             
         #thread = threading.Thread(target=worker)
         #thread.start()
-        for curret_step in range(self.steps):
+        for current_step in range(self.steps):
 
-            lng, lat = map1.get_random_node()
-            agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
-            map1.add_agents(agent_list)
+            #lng, lat = map1.get_random_node()
+            #agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
+            #map1.add_agents(agent_list)
 
-
-
-
+            a.act()
 
 
 
 
 
 
-            loop = QEventLoop()
-            QTimer.singleShot(self.step_time_sec, loop.quit)
-            loop.exec_()
-            self.curret_step = curret_step
+
+            self.update(current_step,gui)
+            #loop = QEventLoop()
+            #QTimer.singleShot(self.step_time_sec, loop.quit)
+            #loop.exec_()
+            #self.curret_step = curret_step
             #print(self.curret_step)
-            gui.disp_time.setText(str(self.curret_step))
-            gui.reload_map()
-            
-        gui.disp_time.setText("Complete")
+            #gui.disp_time.setText(str(self.curret_step))
+            #gui.reload_map()
+        self.end(gui)  
+        self.graph(agent_list)
+        
             
     
     def One_DA_N_CH(N):
         pass
-
-    def update(self, gui):
-        loop = QEventLoop()
-        QTimer.singleShot(self.step_time_sec, loop.quit)
-        loop.exec_()
-        self.curret_step = curret_step
-        print(self.curret_step)
-        gui.disp_time.setText(str(self.curret_step))
-        gui.reload_map()
 
     def N_DA_N_CH(self,map1,gui):
 
@@ -188,7 +219,7 @@ class simulation():
 
 
 
-            update(gui)
+            update(current_step,gui)
             
         gui.disp_time.setText("Complete")
 
