@@ -201,6 +201,12 @@ class map:
 
         return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 
+
+    def clean_map(self):
+        ec = ['grey' if data['oneway'] else '#e0e0e0' for u, v, key, data in self.G.edges(keys=True, data=True)]
+        self.fig, self.ax = ox.plot_graph(self.G, fig_height=settings.fig_height, node_size=0, edge_color=ec, 
+        edge_linewidth=0.5, show=False, close=False, save=False,filename=settings.place)
+
         
 
 
