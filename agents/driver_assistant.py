@@ -9,54 +9,27 @@ import matplotlib
 
 class driver_assistant(agents.geographic_agent.geographic_agent):
 
-	def __init__(self,lat,lng, battery):
+	def __init__(self, origin, route, battery, map):
 		#agents.geographic_agent.geographic_agent.__init__(self,lat,lng)
 		self.name = "driver assistant"
 		self.batery = battery
-
 		self.velocity = 0
-
-		#Agent has the map
-		self.map = map.map()
-		self.G = self.map.get_map()
-		#ox.plot_graph(G, fig_height=10, fig_width=10, edge_color="black")
-
+		self.accelaration = 0
 		
-		#---DEPRACATED---
-		#A = self.map.get_random_node()
-		#B = self.map.get_random_node()
-		#C = self.map.get_random_node()
-		#self.route = (A,B,C)
-		#print(self.route)
+		#Agent has the map
+		self.map = map
+		self.G = map.get_map()
+		
+		#Route and Coordenates
+		self.route = route
+		self.current_node = origin
+		self.current_x = self.G.nodes[origin]['x']
+		self.current_y = self.G.nodes[origin]['y']
 
-		#Generate a route
-		self.route = []
-		no_route = True
-		while no_route:
-			try:
-				# A->B
-				A = np.random.choice(self.G.nodes)
-				B = np.random.choice(self.G.nodes)
-				r = nx.shortest_path(self.G, A, B, weight='length')
-				self.route.append(r)
-				
-				# B->C
-				C = np.random.choice(self.G.nodes)
-				r = nx.shortest_path(self.G, B, C, weight='length')
-				self.route.append(r)
 
-				# C->A
-				r = nx.shortest_path(self.G, C, A, weight='length')
-				self.route.append(r)
+	def animate(self):
+		pass
 
-				no_route = False
-			except:
-				print("Route couldn't be created.... Retrying")
-
-		print(self.route)
-		#xA = G.nodes[A]['x']
-		#ox.plot_graph_route(G, route, fig_height=10, fig_width=10)
-		ox.plot_graph_routes(self.G, self.route)
 
 def get_route(G, origin, destination):
     """
@@ -148,7 +121,21 @@ def path_decompiler(lines):
     clean_path.append(path[-1])
     return clean_path
 
+#Help Functions
+	
+		#ox.plot_graph(G, fig_height=10, fig_width=10, edge_color="black")
 
-#TESTING		
-d = driver_assistant(1,1,1)
+		
+		#---DEPRACATED---
+		#A = self.map.get_random_node()
+		#B = self.map.get_random_node()
+		#C = self.map.get_random_node()
+		#self.route = (A,B,C)
+		#print(self.route)
+		#xA = G.nodes[A]['x']
+		#ox.plot_graph_route(G, route, fig_height=10, fig_width=10)
+		#ox.plot_graph_routes(self.G, self.route)
+
+		
+
 

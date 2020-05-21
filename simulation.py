@@ -4,6 +4,8 @@ from agents import charger_handler,driver_assistant,energy_broker,power_operativ
 import random
 import time
 import threading
+import numpy as np
+import networkx as nx
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
 
@@ -111,13 +113,41 @@ class simulation():
         lng, lat = map1.get_random_point()
         b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
 
+        #DRIVER ASSISTANT
+        #Generate a route -> TODO: Have a function that do this
+        route = []
+        no_route = True
+        A = None
+        while no_route:
+			try:
+				# A->B
+				A = np.random.choice(self.G.nodes)
+				B = np.random.choice(self.G.nodes)
+				r = nx.shortest_path(self.G, A, B, weight='length')
+				route.append(r)
+				
+				# B->C
+				C = np.random.choice(self.G.nodes)
+				r = nx.shortest_path(self.G, B, C, weight='length')
+				route.append(r)
+
+				# C->A
+				r = nx.shortest_path(self.G, C, A, weight='length')
+				route.append(r)
+
+				no_route = False
+			except:
+				print("Route couldn't be created.... Retrying")
+        
+        c = driver_assistant.driver_assistant(A, route, 100, map1)
+        
         #lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
         #c = driver_assistant.driver_assistant(lat,lng, self.standard_batery_size)
-
-        lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
+
         
+        lng, lat = map1.get_random_point()
         d = power_operative.power_operative(lat,lng, self.storage_available)
 
 
