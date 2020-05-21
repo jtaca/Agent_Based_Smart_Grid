@@ -9,7 +9,7 @@ import matplotlib
 
 class driver_assistant(geographic_agent.geographic_agent):
 
-	def __init__(self, origin, route, battery, map):
+	def __init__(self, origin, route, battery, map, is_priority):
 
 		
 
@@ -17,6 +17,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 		self.batery = battery
 		self.velocity = 0
 		self.accelaration = 0
+		self.is_priority = is_priority
 
 		#Agent has the map
 		self.map = map
