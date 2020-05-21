@@ -55,34 +55,29 @@ def make_plot(self,G):
     #(38.7414116, -9.143627785022142)
     #lat = 38.7414116
     #lng = -9.143627785022142
-
-    fig, ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+    if ( self.fig is None and self.ax is None ):
+        self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
     filename=settings.place)
 
-
-    #generate random agent in map
-    
-    
-
     for agent in self.agent_list:
-       
+        
         try:
             if agent.name == "energy broker":
-                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 100)
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='y', marker='$EB$', s = 100)
             elif agent.name == "driver assistant":
                 #if agent.is_priority:
                     #ax.scatter(agent.get_longitude(), agent.get_latitude(), c='b', marker='o')#o
                 #else:
-                    ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o')#o
+                    self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='g', marker='o')#o
 
             elif agent.name == "charger handler":
-                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')#v
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='v')#v
             elif agent.name == "power operative":
-                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='k', marker='$P$', s = 100)#v
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='k', marker='$P$', s = 100)#v
             else:
-                ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
         except:
-             ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
+             self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x')
              
         #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
     #ax.scatter(lng, lat, c='r', marker='x')
@@ -91,31 +86,26 @@ def make_plot(self,G):
     #geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
     #nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
    
-
-
-
-
-    
     
 
     #plt.savefig(settings.place)
-    ax.set_frame_on(False)
-    ax.set_clip_on(False)
-    fig.set_figheight(settings.fig_height)
-    fig.set_figwidth(settings.fig_height)
+    self.ax.set_frame_on(False)
+    self.ax.set_clip_on(False)
+    self.fig.set_figheight(settings.fig_height)
+    self.fig.set_figwidth(settings.fig_height)
     #fig = plt.figure(figsize=(settings.fig_height, settings.fig_height))
     #fig.set_edgecolor("#04253a")
-    fig.tight_layout()
+    self.fig.tight_layout()
     #fig = plt.figure(linewidth=10, edgecolor="#04253a")
     
 
-    canvas = agg.FigureCanvasAgg(fig)
+    canvas = agg.FigureCanvasAgg(self.fig)
     canvas.draw()
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
 
-    return fig, ax, raw_data, size
+    return self.fig, self.ax, raw_data, size
 
 
     """  gdf = ox.footprints.footprints_from_point(point=settings.point, distance=settings.dist)
@@ -148,6 +138,8 @@ class map:
         self.agent_list = []
         self.da_list = []
         self.ch_list = []
+        self.fig = None
+        self.ax = None
 
         #generate random agent in map
         #x = random.uniform(self.min_x, self.max_x)
@@ -193,7 +185,7 @@ class map:
         lng = random.uniform(nodes['x'].min(), nodes['x'].max())
         lat = random.uniform(nodes['y'].min(),nodes['y'].max())
 
-        print("random_point: "+str(lat)+" , "+str(lng))
+        #print("random_point: "+str(lat)+" , "+str(lng))
 
         return lng, lat
 
@@ -202,10 +194,10 @@ class map:
         lng = random.uniform(nodes['x'].min(), nodes['x'].max())
         lat = random.uniform(nodes['y'].min(),nodes['y'].max())
 
-        geom, u, v, marosca = ox.get_nearest_edge(G, (lat, lng))
-        nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, G.nodes[n]['y'], G.nodes[n]['x']))
+        geom, u, v, marosca = ox.get_nearest_edge(self.G, (lat, lng))
+        nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, self.G.nodes[n]['y'], self.G.nodes[n]['x']))
 
-        print("random_point: "+lat+" , "+lng)
+        #print("random_point: "+lat+" , "+lng)
 
         return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 

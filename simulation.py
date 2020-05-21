@@ -12,7 +12,7 @@ class simulation():
 
     def __init__(self):
         self.stop = 0
-        self.steps = 10
+        self.steps = 100
         self.number_vehicles = 20
         self.number_priority_vehicles = random.choice(range(self.number_vehicles))
         self.number_stations = 2
@@ -71,9 +71,9 @@ class simulation():
         lng, lat = map1.get_random_point()
         b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
 
-        lng, lat = map1.get_random_point()
+        #lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
-        c = driver_assistant.driver_assistant(lat,lng, self.standard_batery_size)
+        #c = driver_assistant.driver_assistant(lat,lng, self.standard_batery_size)
 
         lng, lat = map1.get_random_point()
         #c = geographic_agent.geographic_agent(lat,lng)
@@ -84,7 +84,7 @@ class simulation():
         agent_list = []
         agent_list.append(a)
         agent_list.append(b)
-        agent_list.append(c)
+        #agent_list.append(c)
         agent_list.append(d)
 
         map1.add_agents(agent_list)
@@ -103,7 +103,7 @@ class simulation():
         #thread.start()
         for curret_step in range(self.steps):
 
-            lng, lat = map1.get_random_point()
+            lng, lat = map1.get_random_node()
             agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
             map1.add_agents(agent_list)
 
@@ -120,7 +120,7 @@ class simulation():
             QTimer.singleShot(self.step_time_sec, loop.quit)
             loop.exec_()
             self.curret_step = curret_step
-            print(self.curret_step)
+            #print(self.curret_step)
             gui.disp_time.setText(str(self.curret_step))
             gui.reload_map()
             
