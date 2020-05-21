@@ -6,7 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import map
+from matplotlib import pyplot as plt
+import matplotlib.backends.backend_agg as agg
+import simulation
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
