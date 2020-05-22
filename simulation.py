@@ -10,12 +10,13 @@ import settings
 from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
 from matplotlib import pyplot as plt
+import statistics
 
 
 class simulation():
 
     def __init__(self):
-        self.stop = 0
+        self.stop_tog = False
         self.steps = settings.simulation_time
         self.number_vehicles = settings.nr_vehicles
         self.number_priority_vehicles = settings.nr_priority_vehicles #random.choice(range(self.number_vehicles)) #7
@@ -48,6 +49,7 @@ class simulation():
         self.energy_price_buy = settings.energy_price_buy
         self.energy_price_sell = settings.energy_price_sell
         self.current_step = 0
+        self.prev_step = -1
         self.architecture = "Not yet chosen"
 
         #stats for simulation results
@@ -64,32 +66,45 @@ class simulation():
 
         pass
 
+    def do_step(self):
+        self.do_step_arg = True
+        pass
 
-    def update(self,current_step, gui):
+    def update(self, gui):
         loop = QEventLoop()
         QTimer.singleShot(self.step_time_sec, loop.quit)
         loop.exec_()
-        self.current_step = current_step
+        if not self.stop_tog or self.do_step_arg:
+            self.current_step += 1
+            
+        #self.current_step = current_step
         print(self.current_step)
-        gui.disp_time.setText(str(self.current_step))
-        gui.reload_map()
+        if (not self.stop_tog or self.do_step_arg) and self.prev_step != self.current_step:
+            self.prev_step = self.current_step
+            gui.disp_time.setText(str(self.current_step))
+            gui.reload_map()
+            self.do_step_arg = False
 
     def end(self, gui):
         gui.disp_time.setText("Complete")
         print("Complete")
 
-    def plot(self, x,y):
+    def plot(self,x,y):
         fig_energy, ax_energy = plt.subplots()
         #xerr = 5000*np.random.random_sample(20)
-        yerr = (max(y)/4)*np.random.random_sample(len(y))
-        ax_energy.errorbar(x, y,yerr=yerr,fmt='-o')
+        #my_xticks = ['a', 'b', 'c', 'd']
+        #plt.xticks(x, x)
+        yerr = (statistics.mean(y) /4)*np.random.random_sample(len(y))
+        ax_energy.errorbar(x, y,yerr=yerr,fmt='-o',marker='s', mfc='blue',
+         mec='green',  ecolor='r')
         plt.axis([0, max(x), 0, (max(y)+max(yerr))])
         plt.ylabel('Energy available from source')
         plt.xlabel('Step')
+        #plt.show()
         plt.savefig('graphs/Energy_Available_history.png')
 
-    def graph(self,agent_list):
-        for agent in agent_list:
+    def graph(self):
+        for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
                 self.plot(list(range(self.steps)), self.energy_history)
@@ -104,21 +119,20 @@ class simulation():
         self.current_step = 0
         #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
         #print(b.get_latitude())
-        
         gui.disp_vehicles.setText(str(self.number_vehicles))
         gui.disp_stations.setText(str(self.number_stations))
         gui.disp_priority.setText(str(self.number_priority_vehicles))
         map1.clean_map()
-
         listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
         gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
+        self.agent_list = []
 
         
         #print(a.get_latitude())
         #print(a.get_closest_node(map1.get_map()))
 
         lng, lat = map1.get_random_point()
-        #b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
+        b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
 
         #DRIVER ASSISTANT
         #Generate a route -> TODO: Have a function that do this
@@ -156,57 +170,35 @@ class simulation():
 
         
         lng, lat = map1.get_random_point()
-        #d = power_operative.power_operative(lat,lng, self.storage_available, self)
+        d = power_operative.power_operative(lat,lng, self.storage_available, self)
+        self.agent_list.append(d)
 
         lng, lat = map1.get_random_point()
-        #a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
+        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
+        self.agent_list.append(a)
 
-
-        agent_list = []
-        #agent_list.append(a)
+        
+        
         #agent_list.append(b)
-        agent_list.append(c)
-        #agent_list.append(d)
+        #agent_list.append(c)
+        
 
-        map1.add_agents(agent_list)
-
+        map1.add_agents(self.agent_list)
         
         
-        def worker():
-            #last_step = 0
-            #while self.curret_step < self.steps: 
-                #if last_step < self.curret_step: 
-            print(self.curret_step)
-            gui.disp_time.setText(str(self.curret_step))
-            gui.reload_map()
-            
-        #thread = threading.Thread(target=worker)
-        #thread.start()
-        for current_step in range(self.steps):
-
-            #lng, lat = map1.get_random_node()
-            #agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
-            #map1.add_agents(agent_list)
-
-            #a.act()
-            c.animate()
+        while self.current_step < self.steps:
+        #for current_step in range(self.steps):
+            if not self.stop_tog or self.do_step_arg:
+                a.act()
+                #c.animate()
+                d.act()
 
 
 
 
-
-
-
-            self.update(current_step,gui)
-            #loop = QEventLoop()
-            #QTimer.singleShot(self.step_time_sec, loop.quit)
-            #loop.exec_()
-            #self.curret_step = curret_step
-            #print(self.curret_step)
-            #gui.disp_time.setText(str(self.curret_step))
-            #gui.reload_map()
+            self.update(gui)
         self.end(gui)  
-        self.graph(agent_list)
+        self.graph()
                    
     def One_DA_N_CH(self,N):
         self.architecture = "1 DA; N CH; 1 PO; 1 EB"
@@ -275,9 +267,9 @@ class simulation():
         pass
 
     def stop(self):
-        if self.stop == 0:
-            self.stop = 1
+        if not self.stop_tog:
+            self.stop_tog = True
         else:
-            self.stop = 0
+            self.stop_tog = False
         
 
