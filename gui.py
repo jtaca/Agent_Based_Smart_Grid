@@ -6,7 +6,10 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import map
+from matplotlib import pyplot as plt
+import matplotlib.backends.backend_agg as agg
+import simulation
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -225,19 +228,19 @@ class Ui_MainWindow(object):
         self.sim = simulation.simulation()
         self.sim.test( self.map, self)
 
-        
+
 
     def click_step(self):
         self.reload_map()
         self.disp_time.setText("1")
         print("step")
-        
+
     def click_stop(self):
         self.empty_map()
         self.disp_time.setText("2")
         self.sim.stop()
         print("stop")
-    
+
     def click_1_1(self):
         print("click_1_1")
 

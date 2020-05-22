@@ -1,12 +1,23 @@
+import random
 ############
 # SETTINGS #
 ############
 
 simulation_time = 20
-nr_vehicles = 1
-nr_stations = 1
-nr_priority_vehicles = 0
-nr_disasters = 0
+nr_vehicles = 10
+nr_stations = 2
+nr_priority_vehicles = 3 # random.choice(range(self.number_vehicles)) #7
+nr_disasters = 3
+nr_redistribution = 7
+
+max_source_flactuation = 1
+min_source_flactuation = 0.6
+standard_batery_size = 5000
+total_energy_of_tick = nr_vehicles*standard_batery_size
+total_evergy_of_simulation = simulation_time * total_energy_of_tick 
+step_time_milisec = 1
+energy_price_buy = 0.002
+energy_price_sell = 0.01
 
 
 #map
