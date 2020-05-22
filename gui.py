@@ -232,12 +232,16 @@ class Ui_MainWindow(object):
 
     def click_step(self):
         self.reload_map()
-        self.disp_time.setText("1")
+        #self.disp_time.setText("1")
+        try:
+           self.sim.do_step()
+        except:
+            print("no simulation running.")
         print("step")
 
     def click_stop(self):
-        self.empty_map()
-        self.disp_time.setText("2")
+        #self.empty_map()
+        #self.disp_time.setText("2")
         self.sim.stop()
         print("stop")
 

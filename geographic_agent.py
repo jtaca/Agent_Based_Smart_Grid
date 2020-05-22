@@ -18,6 +18,12 @@ class geographic_agent:
         def get_longitude(self):
             return self.lng
 
+        def set_latitude(self, lat):
+            self.lat = lat
+
+        def set_longitude(self,lng):
+            self.lng = lng
+
         def get_closest_node(self,G ):
             nodes, _ = ox.graph_to_gdfs(G)
 
