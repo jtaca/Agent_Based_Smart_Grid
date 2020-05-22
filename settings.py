@@ -15,7 +15,7 @@ min_source_flactuation = 0.6
 standard_batery_size = 5000
 total_energy_of_tick = nr_vehicles*standard_batery_size
 total_evergy_of_simulation = simulation_time * total_energy_of_tick 
-step_time_milisec = 1
+step_time_milisec = 1000
 energy_price_buy = 0.002
 energy_price_sell = 0.01
 

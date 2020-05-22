@@ -10,7 +10,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def __init__(self, origin, route, battery, map, is_priority):
         self.name = "driver assistant"
         self.battery = battery
-        self.velocity = 100
+        self.velocity = 10
         self.accelaration = 0
         self.is_priority = is_priority
 
@@ -67,6 +67,11 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.lng = self.lng + self.velocity * dt
         self.lat = self.lat + self.velocity * dt
 
+        print("Longitude")
+        print(self.lng)
+        print("Latitude")
+        print(self.lat)
+
         self.determine_view()
         
 
@@ -104,8 +109,8 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         :return bool: True if the car is passing a node, False otherwise
         """
-        car_near_xnode = np.isclose(self.view[0][0], self.x, rtol=1.0e-6)
-        car_near_ynode = np.isclose(self.view[0][1], self.y, rtol=1.0e-6)
+        car_near_xnode = np.isclose(self.car_view[0][0], self.x, rtol=1.0e-6)
+        car_near_ynode = np.isclose(self.car_view[0][1], self.y, rtol=1.0e-6)
 
         if car_near_xnode and car_near_ynode:
             return True

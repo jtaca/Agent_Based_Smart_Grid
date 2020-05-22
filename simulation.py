@@ -118,7 +118,7 @@ class simulation():
         #print(a.get_closest_node(map1.get_map()))
 
         lng, lat = map1.get_random_point()
-        b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
+        #b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
 
         #DRIVER ASSISTANT
         #Generate a route -> TODO: Have a function that do this
@@ -156,17 +156,17 @@ class simulation():
 
         
         lng, lat = map1.get_random_point()
-        d = power_operative.power_operative(lat,lng, self.storage_available, self)
+        #d = power_operative.power_operative(lat,lng, self.storage_available, self)
 
         lng, lat = map1.get_random_point()
-        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
+        #a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
 
 
         agent_list = []
-        agent_list.append(a)
-        agent_list.append(b)
+        #agent_list.append(a)
+        #agent_list.append(b)
         agent_list.append(c)
-        agent_list.append(d)
+        #agent_list.append(d)
 
         map1.add_agents(agent_list)
 
@@ -188,7 +188,8 @@ class simulation():
             #agent_list.append(driver_assistant.driver_assistant(lat,lng, self.standard_batery_size))
             #map1.add_agents(agent_list)
 
-            a.act()
+            #a.act()
+            c.animate()
 
 
 
