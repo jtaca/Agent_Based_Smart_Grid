@@ -10,7 +10,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def __init__(self, origin, route, battery, map, is_priority):
         self.name = "driver assistant"
         self.battery = battery
-        self.velocity = 10
+        self.velocity = 0.1
         self.accelaration = 0
         self.is_priority = is_priority
 
@@ -24,9 +24,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.lng = self.G.nodes[origin]['x']
         self.lat = self.G.nodes[origin]['y']
         if is_priority:
-            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'b', 'o', 10, 3)
+            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'b', 'o', 20, 2)
         else:
-            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'g', 'o', 10, 3)
+            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'g', 'o', 20, 2)
         
         #For Animation
         self.route_idx = 0
@@ -66,11 +66,13 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.y = self.y + self.velocity * dt
         self.lng = self.lng + self.velocity * dt
         self.lat = self.lat + self.velocity * dt
-
+        self.set_latitude(self.lat)
+        self.set_longitude(self.lng)
+        print("c")
         print("Longitude")
-        print(self.lng)
+        print(self.get_longitude())
         print("Latitude")
-        print(self.lat)
+        print(self.get_latitude())
 
         self.determine_view()
         
