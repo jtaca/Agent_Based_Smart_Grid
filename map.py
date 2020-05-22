@@ -55,8 +55,9 @@ def make_plot(self,G):
     #(38.7414116, -9.143627785022142)
     #lat = 38.7414116
     #lng = -9.143627785022142
-    if ( self.fig is None and self.ax is None ):
-        self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+    # correct previous things myabe create new plot
+    #if ( self.fig is None and self.ax is None ):
+    self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
     filename=settings.place)
 
     for agent in self.agent_list:
@@ -122,8 +123,8 @@ class map:
         self.max_y=nodes['y'].max()
         self.min_x=nodes['x'].min()
         self.min_y=nodes['y'].min()
-        print(self.max_x)
-        print(self.max_y)
+        #print(self.max_x)
+        #print(self.max_y)
         self.agent_list = []
         self.da_list = []
         self.ch_list = []
