@@ -2,13 +2,16 @@ import geographic_agent
 
 class power_operative(geographic_agent.geographic_agent):
 
-		def __init__(self,lat,lng, storage_available):
+		def __init__(self,lat,lng, storage_available,simulation):
 				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', '$P$', 100,2)
 				self.name = "power operative"
 				self.acumulated_energy = 0
 				self.storage_available = storage_available
+				self.available_for_tick = 0
+				#self.simulation.
 
 		def act(self):
+
 			pass
 
 		def calculate_energy_used_in_tick(self):
@@ -20,18 +23,21 @@ class power_operative(geographic_agent.geographic_agent):
 			pass
 
 		def ask_for_spending_report(self):
+
 			pass
 
 		def give_power(self):
-			#recieve power for ch
+
+			#give power to ch
 			pass 
 
-		def recieve_energy(self):
-			pass # current power = new + accumulated (form PO)
+		def recieve_energy(self, energy):
+			self.available_for_tick = self.storage_available + energy
+			#pass # current power = new + accumulated (form PO)
 
-		def store_energy(self):
+		def store_remaining_energy(self):
 			pass
 
-		def request_energy(self):
-			pass
+		#def request_energy(self):
+		#	pass
 

@@ -16,6 +16,9 @@ class energy_broker(geographic_agent.geographic_agent):
         self.flactuation_min = self.total_energy_of_tick*min_flactuation
         self.flactuation_max = self.total_energy_of_tick*max_flactuation
         self.energy_history = []
+        for i in self.simulation.agent_list:
+            if i.name == "power operative":
+                self.power_operative = i
 
     def act(self):
         self.energy_available = self.total_energy_of_tick
@@ -44,6 +47,7 @@ class energy_broker(geographic_agent.geographic_agent):
     def concede_energy_to_po(self):
         self.energy_history.append(self.energy_available)
         print("eb give: "+ str( self.energy_available))
+        self.power_operative.recieve_energy(self.energy_available)
         pass
 
     

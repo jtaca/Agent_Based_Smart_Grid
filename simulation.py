@@ -113,8 +113,7 @@ class simulation():
         listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
         gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
 
-        lng, lat = map1.get_random_point()
-        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
+        
         #print(a.get_latitude())
         #print(a.get_closest_node(map1.get_map()))
 
@@ -157,7 +156,10 @@ class simulation():
 
         
         lng, lat = map1.get_random_point()
-        d = power_operative.power_operative(lat,lng, self.storage_available)
+        d = power_operative.power_operative(lat,lng, self.storage_available, self)
+
+        lng, lat = map1.get_random_point()
+        a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
 
 
         agent_list = []
@@ -204,9 +206,7 @@ class simulation():
             #gui.reload_map()
         self.end(gui)  
         self.graph(agent_list)
-        
-            
-    
+                   
     def One_DA_N_CH(self,N):
         self.architecture = "1 DA; N CH; 1 PO; 1 EB"
         pass
