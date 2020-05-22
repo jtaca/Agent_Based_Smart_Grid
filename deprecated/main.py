@@ -114,6 +114,18 @@ def check_start_stop(start, count, lastcount):
 clock = pygame.time.Clock()
 
 gameDisplay.fill(white)
+""" 
+def worker():
+            #last_step = 0
+            #while self.curret_step < self.steps: 
+                #if last_step < self.curret_step: 
+            print(self.curret_step)
+            gui.disp_time.setText(str(self.curret_step))
+            gui.reload_map()
+            
+        #thread = threading.Thread(target=worker)
+        #thread.start() """
+
 while not crashed:
     for event in pygame.event.get():
         mouse = pygame.mouse.get_pos()
