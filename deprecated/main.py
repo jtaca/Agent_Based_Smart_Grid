@@ -140,6 +140,10 @@ while not crashed:
                 gameDisplay.fill(white)
                 counter -= 1
                 text = "time to end: "+str(counter).rjust(3) if counter > 0 else 'Simulation ended' 
+                #lng, lat = map1.get_random_point()
+                #c = geographic_agent.geographic_agent(lat,lng)
+                #c = driver_assistant.driver_assistant(lat,lng, self.standard_batery_size)
+                #c = geographic_agent.geographic_agent(lat,lng)
                 #map1.reload_frame()
                 map()
                 Globalbenfetched = False
