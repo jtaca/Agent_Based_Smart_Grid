@@ -66,6 +66,19 @@ class simulation():
 
         pass
 
+    def start_simulation(self,map1,gui):
+        self.architecture = "Test"
+        self.current_step = 0
+        #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
+        #print(b.get_latitude())
+        gui.disp_vehicles.setText(str(self.number_vehicles))
+        gui.disp_stations.setText(str(self.number_stations))
+        gui.disp_priority.setText(str(self.number_priority_vehicles))
+        map1.clean_map()
+        listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
+        gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
+        self.agent_list = []
+
     def do_step(self):
         self.do_step_arg = True
         pass
@@ -115,25 +128,9 @@ class simulation():
         
 
     def test(self,map1,gui):
-        self.architecture = "Test"
-        self.current_step = 0
-        #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
-        #print(b.get_latitude())
-        gui.disp_vehicles.setText(str(self.number_vehicles))
-        gui.disp_stations.setText(str(self.number_stations))
-        gui.disp_priority.setText(str(self.number_priority_vehicles))
-        map1.clean_map()
-        listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
-        gui.disp_outages.setText(str(self.number_disasters)+" in ticks: "+listToStr)
-        self.agent_list = []
+        self.start_simulation(map1,gui)
 
-        
-        #print(a.get_latitude())
-        #print(a.get_closest_node(map1.get_map()))
-
-        lng, lat = map1.get_random_point()
-        b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
-
+       
         #DRIVER ASSISTANT
         #Generate a route -> TODO: Have a function that do this
         route = []
@@ -163,10 +160,10 @@ class simulation():
         is_priority = True
         c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1, is_priority)
         
+        
+        
         #lng, lat = map1.get_random_point()
-        #c = geographic_agent.geographic_agent(lat,lng)
-        #c = driver_assistant.driver_assistant(lat,lng, self.standard_batery_size)
-        #c = geographic_agent.geographic_agent(lat,lng)
+        #b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
 
         
         lng, lat = map1.get_random_point()
