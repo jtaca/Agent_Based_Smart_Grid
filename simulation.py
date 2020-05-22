@@ -120,11 +120,12 @@ class simulation():
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
+                print(len(self.energy_history))
                 self.plot(list(range(self.steps)), self.energy_history)
                 break
             else:
                 self.energy_history = "energy_history not found"
-        #print(self.energy_history)
+        
         
 
     def test(self,map1,gui):
@@ -159,7 +160,7 @@ class simulation():
         
         is_priority = True
         c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1, is_priority)
-        
+        self.agent_list.append(c)
         
         
         #lng, lat = map1.get_random_point()
@@ -174,21 +175,14 @@ class simulation():
         a = energy_broker.energy_broker(lat,lng,self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
         self.agent_list.append(a)
 
-        
-        
-        #agent_list.append(b)
-        #agent_list.append(c)
-        
-
         map1.add_agents(self.agent_list)
-        
         
         while self.current_step < self.steps:
         #for current_step in range(self.steps):
             if not self.stop_tog or self.do_step_arg:
-                a.act()
-                #c.animate()
-                d.act()
+                #for agent in self.agent_list:
+                    #agent.act()
+                c.animate()
 
 
 

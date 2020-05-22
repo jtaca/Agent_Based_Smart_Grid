@@ -6,11 +6,7 @@ import osmnx as ox
 import settings 
 #import simulation
 from matplotlib import pyplot as plt
-
 import matplotlib.backends.backend_agg as agg
-
-
-
 from shapely.geometry import Point
 import geopandas
 import random
@@ -56,9 +52,12 @@ def make_plot(self,G):
     #lat = 38.7414116
     #lng = -9.143627785022142
     # correct previous things myabe create new plot
-    #if ( self.fig is None and self.ax is None ):
-    self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
-    filename=settings.place)
+    if ( self.fig is None and self.ax is None ):
+        self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+        filename=settings.place)
+    else:
+        del self.ax.scatter
+    
 
     for agent in self.agent_list:
         try:

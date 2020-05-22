@@ -41,12 +41,11 @@ class energy_broker(geographic_agent.geographic_agent):
     
     def do_power_redistribution(self): 
         print("redistribution")
-        self.energy_available =   self.total_energy_of_tick - random.uniform(self.flactuation_min, self.flactuation_max)
+        self.energy_available =  random.uniform(self.flactuation_min, self.flactuation_max) # """self.total_energy_of_tick -""" 
         pass
 
     def concede_energy_to_po(self):
         self.energy_history.append(self.energy_available)
-        print("eb give: "+ str( self.energy_available))
         self.power_operative.recieve_energy(self.energy_available)
         pass
 
