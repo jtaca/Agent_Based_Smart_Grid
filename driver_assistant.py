@@ -1,57 +1,137 @@
 import geographic_agent
-
 import map
 
 import networkx as nx
 import numpy as np
 import osmnx as ox
-import matplotlib
 
 class driver_assistant(geographic_agent.geographic_agent):
 
-	def __init__(self, origin, route, battery, map, is_priority):
+    def __init__(self, origin, route, battery, map, is_priority):
+        self.name = "driver assistant"
+        self.battery = battery
+        self.velocity = 100
+        self.accelaration = 0
+        self.is_priority = is_priority
 
-		
+        #Agent has the map
+        self.map = map
+        self.G = map.get_map()
 
-		self.name = "driver assistant"
-		self.batery = battery
-		self.velocity = 0
-		self.accelaration = 0
-		self.is_priority = is_priority
-		
+        #Route and Coordenates
+        self.list_route = route
+        self.current_node = origin
+        self.lng = self.G.nodes[origin]['x']
+        self.lat = self.G.nodes[origin]['y']
+        if is_priority:
+            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'b', 'o', 10, 3)
+        else:
+            geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'g', 'o', 10, 3)
+        
+        #For Animation
+        self.route_idx = 0
+        self.x = self.lng
+        self.y = self.lat
+        self.current_route = self.list_route[0]
+        self.origin = origin
+        self.destination = self.current_route[len(self.current_route)-1]
+        self.path = get_path(self.G, self.origin, self.destination)
+        self.xpath = np.array([self.path[i][0] for i in range(len(self.path))])
+        self.ypath = np.array([self.path[i][1] for i in range(len(self.path))])
 
-		#Agent has the map
-		self.map = map
-		self.G = map.get_map()
+        #View
+        self.car_view = self.determine_view() #Gives the next 3 nodes_coordenates, what the car sees
+        
+        
+    def determine_view(self):
+        """
+        this method handles the exception where the path is shorter than look_ahead_nodes
 
-		#Route and Coordenates
-		self.route = route
-		self.current_node = origin
-		self.lng = self.G.nodes[origin]['x']
-		self.lat = self.G.nodes[origin]['y']
-		if is_priority:
-			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'b','o',10,3)
-		else:
-			geographic_agent.geographic_agent.__init__( self, self.lat , self.lng,'g','o',10,3)
-		
+        :return view: list or bool: list of nodes immediately ahead of the car or False if end of route
+        """
+        look_ahead_nodes = 3
+        xpath, ypath = self.xpath, self.ypath
+        if xpath.any() and ypath.any():
+            x, y = xpath[:look_ahead_nodes], ypath[:look_ahead_nodes]
+            return [(x[i], y[i]) for i in range(len(x))]
+        else:
+            return False
 
-	def animate(self):
-		pass
+        
+    def animate(self):
+        self.update_current_route()
+        dt = 1/1000
+        
+        self.x = self.x + self.velocity * dt
+        self.y = self.y + self.velocity * dt
+        self.lng = self.lng + self.velocity * dt
+        self.lat = self.lat + self.velocity * dt
 
+        self.determine_view()
+        
 
+    def update_current_route(self):
+        xpath, ypath = self.xpath, self.ypath
+        if xpath.any() and ypath.any():
+            #determine if the car has just crossed a node
+            if self.crossed_node_event():
+                self.xpath = xpath[1:]
+                self.ypath = ypath[1:]
+                #new_xpaths.append(xpath[1:])
+                #new_ypaths.append(ypath[1:])
+            else:
+                #Path maintains nothing happens
+                pass
+                #new_xpaths.append(xpath)
+                #new_ypaths.append(ypath)
+        else:
+            #Route ended, change route
+            self.route_idx += 1
+            self.current_route = self.list_route[self.route_idx % 3]
+            self.origin = self.current_route[0]
+            self.destination = self.current_route[len(self.current_route)-1]
+            self.path = get_path(self.G, self.origin, self.destination)
+            self.xpath = np.array([self.path[i][0] for i in range(len(self.path))])
+            self.ypath = np.array([self.path[i][1] for i in range(len(self.path))])
+            
+        
+            
+    #TODO: Test this
+    def crossed_node_event(self):
+        """
+        Determines if the car has crossed a node, and advises simulation to change
+        its velocity vector accordingly
 
+        :return bool: True if the car is passing a node, False otherwise
+        """
+        car_near_xnode = np.isclose(self.view[0][0], self.x, rtol=1.0e-6)
+        car_near_ynode = np.isclose(self.view[0][1], self.y, rtol=1.0e-6)
 
-def get_route(G, origin, destination):
-    """
-    acquires the typical node-based route list from NetworkX with weight=length
+        if car_near_xnode and car_near_ynode:
+            return True
+        else:
+            return False
 
-    :param      origin: node ID
-    :param destination: node ID
-    :return:     route: list of intersection nodes
-    """
-    return nx.shortest_path(G, origin, destination, weight='length')
+    def upcoming_node_coordinates(self):
+        """
+        Determines the coordinates of the next node in view
 
-def get_init_path(G, origin, destination):
+        :return view: tuple: returns upcoming node coords in the path
+        """
+        if self.view:
+            if self.crossed_node_event():
+                if len(self.view) >= 2:
+                    return self.view[1]
+                else:
+                    return get_coordinates_of_node(self.G, self.destination)
+            else:
+                return self.view[0]
+        else:
+            # end of route
+            return get_coordinates_of_node(self.G, self.destination)
+      
+
+def get_path(G, origin, destination):
     """
     compiles a list of tuples which represents a route
 
@@ -130,6 +210,21 @@ def path_decompiler(lines):
             clean_path.append(path[i])
     clean_path.append(path[-1])
     return clean_path
+
+
+def get_coordinates_of_node(G, node):
+    """
+    Get latitude and longitude given node ID
+
+    :param node:      graphml node ID
+    :return position: array:    [latitude, longitude]
+    """
+    # note that the x and y coordinates of the G.nodes are flipped
+    # this is possibly an issue with the omnx G.load_graphml method
+    # a correction is to make the position tuple be (y, x) as below
+    coord = np.array([G.nodes[node]['x'], G.nodes[node]['y']])
+    return coord
+
 
 #Help Functions
 
