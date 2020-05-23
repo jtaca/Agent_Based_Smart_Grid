@@ -9,7 +9,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.name = "charger handler"
 		self.id = id
 		self.map = map
-		self.energy_available = 0 # you must ask PO , energy is for each step
+		self.energy_available = 0 # you must ask PO, energy is for each step
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
 		self.is_charging = False
@@ -21,7 +21,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		#self.stations being used
 
 		#deliberative
-		self.desires = ['bid_da', 'negotiate_po', 'give', 'receive']
+		self.desires = ['bid_da', 'negotiate_po']
 		self.actions = ['bid_da', 'negotiate_po', 'give', 'receive']
 		self.plan = []
 		self.intention = 'store' #TODO
@@ -38,12 +38,14 @@ class charger_handler(geographic_agent.geographic_agent):
 		tem de receber o numero total de ticks
 		tem de receber o ch_passive_spend_energy
 		quanta energia posso carregar o carro por tick?
+		po:
+		- tem de ter um método que devolve se pode negociar, ou se ainda tem acumulated_energy para negociar
 		'''
 
 
 	# DA calls this when needs energy
 	def add_da_to_queue(self, da):
-		self.vehicle_queue.append(da)
+		self.da_queue.append(da)
 
 
 	#def updateBeliefs(self):
@@ -54,7 +56,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		if self.intention == 'bid_da':
 			return len(self.da_queue) > 0
 		elif self.intention == 'negotiate_po':
-			return  self.po.acumulated_energy > 0
+			return self.po.get_acumulated_energy > 0
 		elif self.intention == 'give':
 			return self.energy_available > 0 and self.bid_result > 0
 		elif self.intention == 'store':
@@ -95,7 +97,7 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def rebuildPlan(self):
-		self.plan =[]
+		self.plan = []
 
 
 	def reconsider(self):
@@ -103,59 +105,39 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def deliberate(self):
-		
-		self.current_desires =[]
-		if self.available_for_tick > 0:
-			self.current_desires.append('store')
+		self.current_desires = []
+		if(len(self.da_queue) > 0):
+			if(self.energy_available == 0):
+				self.current_desires.append('negotiate_po')
 
-		if len(self.report_list_negotiated)>0 and not self.gave: 
-			self.current_desires.append('give')
+			elif(self.energy_available > 0):
+				self.current_desires.append('bid_da')
 
-		if len(self.report_list) > 0 and len(self.report_list_negotiated)==0  :
-			self.current_desires.append('negotiate')
-			
-
-		
-		self.intention = self.current_desires[-1]
-		#if self.intention == 'store':
+		self.intention = self.current_desires[0]
 
 
 	def buildPlan(self):
 		self.plan = []
-		if self.intention == 'negotiate':
-			#for i in range(self.simulation.steps-1):
-			self.plan.append('negotiate')
-			self.plan.append('redistribute')
+		if(self.intention == 'bid_da'):
+			self.plan.append('bid_da')
 			self.plan.append('give')
-			self.plan.append('store')
-			#self.plan.append('negotiate')
-		elif self.intention == 'give':
-			self.plan.append('redistribute')
-			self.plan.append('give')
-			#self.give_power()
-		elif self.intention == 'store':
-			self.plan.append('store')
-			#self.store_remaining_energy()
 
-
-	#def agentReactiveDecision(self):
-	#	self.store_remaining_energy()
-	#	print('PO: i gonne ractive')
-	#	pass
+		if(self.intention == 'negotiate_po'):
+			self.plan.append('negotiate_po')
+			self.plan.append('receive')
+			#self.plan.append('bid_da')
+			#self.plan.append('give')
 
 
 	def act(self):
-		self.updateBeliefs()
-	
-		if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
+		if len(self.plan) > 0 and self.succeededIntention() and not self.impossibleIntention():
 			while len(self.plan)>0:
 				action = self.plan.pop(0)
 				if self.isPlanSound(action):
-					self.execute(action); 
+					self.execute(action)
 				else:
-
 					self.rebuildPlan()
-				if self.reconsider(): 
+				if self.reconsider():
 					self.deliberate()
 					
 			self.buildPlan()	#not official but makes sense in this case (takeout)
@@ -184,6 +166,7 @@ class charger_handler(geographic_agent.geographic_agent):
 	def charge_da(self):
 		da = self.da_queue[0]
 		energy_da = self.bid_result
+		self.
 		da.give_energy(energy_da)
 
 	def receive_energy_po(self):
@@ -205,6 +188,9 @@ class charger_handler(geographic_agent.geographic_agent):
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
 		return math.ceil(total_energy_to_give / max_energy_per_tick)
+	
+	def get_time_of_wait(self):
+		return
 
 	def report_charge_time(self): #for each vehicle
 		pass
@@ -251,6 +237,41 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 
+'''
+Testing
+'''
+class test_da:
+	def __init__(self, id, ch):
+		self.id = id
+		self.ch = ch
+		pass
+
+	def act(self):
+		self.ch.add_da_to_queue(self)
+
+
+
+class test_po:
+	def __init__(self):
+		pass
+
+
 
 if __name__ == "__main__":
-	c = charger_handler(1, 1, "", 1, 1, "po")
+	po = test_po()
+	ch = charger_handler(1, 1, "", 1, 1, po)
+
+	da = test_da(1, ch)
+	da.act()
+
+	#for da in ch.da_queue:
+	#	print(da.id)
+	
+	ch.act() # vai escolher o plan (entra no else do act())
+
+	ch.act() # aqui ja tem o plan e vai executa-lo (entra no if do act())
+
+
+
+
+
