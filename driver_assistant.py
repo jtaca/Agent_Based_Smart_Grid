@@ -12,7 +12,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.id = id
         self.name = "driver assistant"
         self.battery = battery
-        self.velocity = 0.1
+        self.velocity = [0.1, 0.1]
+        self.velocityx = self.velocity[0]
+        self.velocityy = self.velocity[1]
         self.accelaration = 0
         self.is_priority = is_priority
         self.is_charging = False
@@ -285,8 +287,8 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.update_current_route()
         dt = 1/1000
         
-        self.x = self.x + self.velocity * dt
-        self.y = self.y + self.velocity * dt
+        self.x = self.x + self.velocityx * dt
+        self.y = self.y + self.velocityy * dt
         self.lng = self.lng + self.velocity * dt
         self.lat = self.lat + self.velocity * dt
         self.set_latitude(self.lat)
@@ -314,6 +316,10 @@ class driver_assistant(geographic_agent.geographic_agent):
 
             velocity_direction = unit_vector(next_node - position)
             self.velocity = velocity_direction * self.velocity
+
+            self.velocityx = self.velocity[0]
+            self.velocityy = self.velocity[1]
+
 
         else:
             #Route ended, change route
@@ -422,7 +428,7 @@ class driver_assistant(geographic_agent.geographic_agent):
                 else:
                     return get_coordinates_of_node(self.G, self.destination)
             else:
-                return self.view[0]
+                return self.car_view[0]
         else:
             # end of route
             return get_coordinates_of_node(self.G, self.destination)
