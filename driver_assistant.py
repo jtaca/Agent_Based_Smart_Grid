@@ -203,11 +203,11 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         elif action == 'go to station':
             #Update route
-            self.animate() #with new route until arrival
-            self.arrive()
+            self.animate() #with new route until arriva
             #say I arrived
             #wait until car is charged
             pass
+        
         elif action == 'arrived':
             self.charging_station.add_da_to_queue(self)
         
@@ -415,10 +415,10 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         :return view: tuple: returns upcoming node coords in the path
         """
-        if self.view:
+        if self.car_view:
             if self.crossed_node_event():
-                if len(self.view) >= 2:
-                    return self.view[1]
+                if len(self.car_view) >= 2:
+                    return self.car_view[1]
                 else:
                     return get_coordinates_of_node(self.G, self.destination)
             else:
