@@ -37,11 +37,13 @@ class charger_handler(geographic_agent.geographic_agent):
 	def message_drivers(self):
 		pass
 
-	def ask_for_energy(self):
+	def get_energy_for_step(self, energy):
+		print('CH: Yay! I gots da energy! '+str(energy))
 		pass
 
 	def report_spent_energy(self):
-		pass
+		return 10
+		#pass
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 
