@@ -25,10 +25,6 @@ import random
 
 #para mudar a distancia (dist) convem mudar tb o dpi
 
-
-    
-
-
 """ 
 # configure the inline image display
 img_folder = 'images'
@@ -52,11 +48,18 @@ def make_plot(self,G):
     #lat = 38.7414116
     #lng = -9.143627785022142
     # correct previous things myabe create new plot
-    if ( self.fig is None and self.ax is None ):
-        self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+    plt.close('all')
+    self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
         filename=settings.place)
-    else:
-        del self.ax.scatter
+        #plt.close('all')
+        #img = plt.imread('images/map_background.png')
+        #self.fig, self.ax = plt.subplots()
+        #self.ax.imshow(img)
+
+        #pass
+        #scat = plt.scatter(50,50,c='r', marker='+')
+        # image, with scatter point overlayed
+        #scat.remove()
     
 
     for agent in self.agent_list:
@@ -64,7 +67,7 @@ def make_plot(self,G):
             self.ax.scatter(agent.get_longitude(), agent.get_latitude(), 
             c= agent.get_color, marker=agent.get_marker, s = agent.get_size,zorder=agent.get_zorder)
         except:
-             self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10,zorder=1) 
+            self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10,zorder=1) 
 
       
              
@@ -129,6 +132,19 @@ class map:
         self.ch_list = []
         self.fig = None
         self.ax = None
+        self.scat = []
+        self.fig, self.ax = ox.plot_graph(self.G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+        filename=settings.place)
+        #plt.savefig(settings.place)
+        self.ax.set_frame_on(False)
+        self.ax.set_clip_on(False)
+        self.fig.set_figheight(settings.fig_height)
+        self.fig.set_figwidth(settings.fig_height)
+        #fig = plt.figure(figsize=(settings.fig_height, settings.fig_height))
+        #fig.set_edgecolor("#04253a")
+        self.fig.tight_layout()
+        #fig = plt.figure(linewidth=10, edgecolor="#04253a")
+        plt.savefig('images/map_background.png')
 
         #generate random agent in map
         #x = random.uniform(self.min_x, self.max_x)
