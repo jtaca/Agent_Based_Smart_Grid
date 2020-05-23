@@ -57,7 +57,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         else:
             return False
 
-        
+    def act(self):
+        pass
+
     def animate(self):
         self.update_current_route()
         dt = 1/1000
@@ -68,11 +70,11 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.lat = self.lat + self.velocity * dt
         self.set_latitude(self.lat)
         self.set_longitude(self.lng)
-        print("c")
-        print("Longitude")
-        print(self.get_longitude())
-        print("Latitude")
-        print(self.get_latitude())
+        #print("c")
+        #print("Longitude")
+        #print(self.get_longitude())
+        #print("Latitude")
+        #print(self.get_latitude())
 
         self.determine_view()
         
