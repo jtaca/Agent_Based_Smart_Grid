@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, po):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -13,6 +13,8 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
 		self.is_charging = False
+		self.cost_per_tick = 10
+		self.simulation = simulation
 
 
 		#if collective CH:
@@ -22,46 +24,35 @@ class charger_handler(geographic_agent.geographic_agent):
 
 		#deliberative
 		self.desires = ['bid_da', 'negotiate_po']
-		self.actions = ['bid_da', 'negotiate_po', 'give', 'receive']
+		self.actions = ['bid_da', 'negotiate_po', 'give', 'wait']
 		self.plan = []
-		self.intention = 'store' #TODO
-		self.current_desires =[]
+		self.intention = 'wait'
+		self.current_desires = []
 
 		#negotiation/bid
 		self.da_queue = []
-		self.po = po
 		self.bid_result = -1
+		self.energy_wanted = 0
 
 		'''
 		duvidas
-		tem de receber o po
-		tem de receber o numero total de ticks
-		tem de receber o ch_passive_spend_energy
-		quanta energia posso carregar o carro por tick?
+		Xtem de receber o po
+		Xtem de receber o numero total de ticks
+		Xtem de receber o ch_passive_spend_energy
+		quanta energia posso carregar o carro por tick? 500
 		po:
 		- tem de ter um método que devolve se pode negociar, ou se ainda tem acumulated_energy para negociar
 		'''
-
-
-	# DA calls this when needs energy
-	def add_da_to_queue(self, da):
-		self.da_queue.append(da)
-
-
-	#def updateBeliefs(self):
-	#	self.ask_for_spending_report()
 
 
 	def succeededIntention(self): #igual ao isPlanSound()
 		if self.intention == 'bid_da':
 			return len(self.da_queue) > 0
 		elif self.intention == 'negotiate_po':
-			return self.po.get_acumulated_energy > 0
+			return True
 		elif self.intention == 'give':
 			return self.energy_available > 0 and self.bid_result > 0
-		elif self.intention == 'store':
-			#TODO
-			#return (self.acumulated_energy < self.storage_available and self.available_for_tick >0 )
+		elif self.intention == 'wait':
 			return True
 		else:
 			return False
@@ -76,24 +67,22 @@ class charger_handler(geographic_agent.geographic_agent):
 		if action == 'bid_da':
 			return len(self.da_queue) > 0
 		elif action == 'negotiate_po':
-			return self.po.acumulated_energy > 0
+			return True
 		elif action == 'give':
 			return self.energy_available > 0 and self.bid_result > 0
-		elif action == 'receive':
-			#TODO
-			#return (self.acumulated_energy < self.storage_available and self.available_for_tick >0 )
+		elif action == 'wait':
 			return True
 
 
 	def execute(self, action):
 		if action == 'bid_da':
-			self.bid_ad()
+			self.bid_da()
 		elif action == 'negotiate_po':
 			self.negotiate_po()
 		elif action == 'give':
 			self.charge_da()
-		elif action == 'receive':
-			self.receive_energy_po()
+		elif action == 'wait':
+			pass
 
 
 	def rebuildPlan(self):
@@ -113,7 +102,10 @@ class charger_handler(geographic_agent.geographic_agent):
 			elif(self.energy_available > 0):
 				self.current_desires.append('bid_da')
 
-		self.intention = self.current_desires[0]
+			self.intention = self.current_desires[0]
+
+		else:
+			self.intention = 'wait'
 
 
 	def buildPlan(self):
@@ -122,11 +114,14 @@ class charger_handler(geographic_agent.geographic_agent):
 			self.plan.append('bid_da')
 			self.plan.append('give')
 
-		if(self.intention == 'negotiate_po'):
+		elif(self.intention == 'negotiate_po'):
 			self.plan.append('negotiate_po')
 			self.plan.append('receive')
 			#self.plan.append('bid_da')
 			#self.plan.append('give')
+		
+		elif(self.intention == 'wait'):
+			self.plan.append('wait')
 
 
 	def act(self):
@@ -139,7 +134,7 @@ class charger_handler(geographic_agent.geographic_agent):
 					self.rebuildPlan()
 				if self.reconsider():
 					self.deliberate()
-					
+
 			self.buildPlan()	#not official but makes sense in this case (takeout)
 		else:
 			#print(self.plan)
@@ -163,27 +158,22 @@ class charger_handler(geographic_agent.geographic_agent):
 	o Communicate with CH
 		▪ Message other CHs of waiting time
 	'''
+	#action 'give'
 	def charge_da(self):
 		da = self.da_queue[0]
 		energy_da = self.bid_result
-		self.
+		self.energy_available -= self.bid_result
 		da.give_energy(energy_da)
+		
+	
+	# DA calls this when needs energy
+	def add_da_to_queue(self, da):
+		self.da_queue.append(da)
 
-	def receive_energy_po(self):
-		return
-
-	def calculate_earnings(self):
-		pass
-
-	def message_drivers(self):
-		pass
-
+	#action 'receive'
 	def get_energy_for_step(self, energy):
+		self.energy_available += energy
 		print('CH: Yay! I gots da energy! '+str(energy))
-		pass
-
-	def report_spent_energy(self):
-		return 10
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
@@ -199,6 +189,7 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	Bid with DA
 	'''
+	# action 'bid_da'
 	def bid_da(self):
 		return
 
@@ -206,11 +197,18 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	Negotiate with PO
 	'''
+	# action 'negotiate_po'
 	def negotiate_po(self):
-		return
+		self.energy_wanted = self.da_queue[0].get_energy_wanted()
+		
+	
+	def report_spent_energy(self):
+		#utility = self.da_queue[0].get_utility()
+		utility = 0
+		return self.id, self.energy_wanted, utility
 
 
-	def compute_energyself(self):
+	def compute_energy(self):
 		total = 0
 		if(len(self.da_to_negotiate) > 0):
 			for da in self.da_to_negotiate:
@@ -224,11 +222,11 @@ class charger_handler(geographic_agent.geographic_agent):
 		po.ask_for_energy(energy, utility) #TODO encontrar esta função no PO
 
 
+
 	def negotiate_power_receive(self):
 		# CH with PO
-		energy_needed = 0
 		utility = 0
-		return self.id, energy_needed, utility
+		return self.id, self.energy_wanted, utility
 
 	def negotiate_power_give(self):
 		# CH with DA
@@ -269,7 +267,13 @@ if __name__ == "__main__":
 	
 	ch.act() # vai escolher o plan (entra no else do act())
 
+	po.act()
+
+	da.act()
+
 	ch.act() # aqui ja tem o plan e vai executa-lo (entra no if do act())
+
+	po.act()
 
 
 
