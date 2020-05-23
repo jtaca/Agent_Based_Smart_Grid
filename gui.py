@@ -260,7 +260,7 @@ class Ui_MainWindow(object):
 
     def default_map(self):
         #self.map
-        self.label_map.setPixmap(QtGui.QPixmap("images/Alameda_buildings.png"))
+        self.label_map.setPixmap(QtGui.QPixmap("images/map_background.png"))
 
     def empty_map(self):
         self.label_map.setText(" ")
