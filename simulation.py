@@ -160,7 +160,7 @@ class simulation():
                 print("Route couldn't be created.... Retrying")
         
         is_priority = True
-        c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1, is_priority)
+        c = driver_assistant.driver_assistant(A, route, self.standard_batery_size , map1, is_priority,0, 0.1,0.2, 0.3)
         self.agent_list.append(c)
         
         
@@ -184,8 +184,8 @@ class simulation():
         while self.current_step < self.steps:
         #for current_step in range(self.steps):
             if not self.stop_tog or self.do_step_arg:
-                for agent in self.proactive_agents:
-                    agent.act()
+                #for agent in self.proactive_agents:
+                #    agent.act()
                 c.animate()
 
 
