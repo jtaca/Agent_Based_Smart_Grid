@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self,lat,lng, map, energy_price_buy,energy_price_sell):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, po):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -12,8 +12,6 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_available = 0 # you must ask PO , energy is for each step
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
-		self.is_on = False
-		self.vehicle_queue = []
 		self.is_charging = False
 
 
@@ -23,14 +21,24 @@ class charger_handler(geographic_agent.geographic_agent):
 		#self.stations being used
 
 		#deliberative
-		self.desires = ['negotiate', 'give', 'store']
-		self.actions = ['negotiate', 'give', 'store','get_reports', 'redistribute'] #recieve could be an action?
+		self.desires = ['bid_da', 'negotiate_po', 'give', 'receive']
+		self.actions = ['bid_da', 'negotiate_po', 'give', 'receive']
 		self.plan = []
-		self.intention = 'store'
+		self.intention = 'store' #TODO
 		self.current_desires =[]
 
 		#negotiation/bid
-		self.da_to_negotiate = []
+		self.da_queue = []
+		self.po = po
+		self.bid_result = -1
+
+		'''
+		duvidas
+		tem de receber o po
+		tem de receber o numero total de ticks
+		tem de receber o ch_passive_spend_energy
+		quanta energia posso carregar o carro por tick?
+		'''
 
 
 	# DA calls this when needs energy
@@ -42,13 +50,17 @@ class charger_handler(geographic_agent.geographic_agent):
 	#	self.ask_for_spending_report()
 
 
-	def succeededIntention(self):
-		if self.intention == 'negotiate':
-			return len(self.report_list) > 0#True #change to got good price
+	def succeededIntention(self): #igual ao isPlanSound()
+		if self.intention == 'bid_da':
+			return len(self.da_queue) > 0
+		elif self.intention == 'negotiate_po':
+			return  self.po.acumulated_energy > 0
 		elif self.intention == 'give':
-			return self.available_for_tick > 0 or self.acumulated_energy > 0
+			return self.energy_available > 0 and self.bid_result > 0
 		elif self.intention == 'store':
-			return (self.acumulated_energy < self.storage_available )
+			#TODO
+			#return (self.acumulated_energy < self.storage_available and self.available_for_tick >0 )
+			return True
 		else:
 			return False
 
@@ -59,29 +71,27 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def isPlanSound(self,action):
-		if action == 'negotiate':
-			return len(self.ch_list) >= 1 or len(self.report_list) >= 1 #True 
+		if action == 'bid_da':
+			return len(self.da_queue) > 0
+		elif action == 'negotiate_po':
+			return self.po.acumulated_energy > 0
 		elif action == 'give':
-			return self.available_for_tick > 0 or self.acumulated_energy > 0
-		elif action == 'store':
-			return (self.acumulated_energy < self.storage_available and self.available_for_tick >0 )
-		elif action == 'get_reports':
-			return len(self.ch_list) > 0 
-		elif action == 'redistribute':
-			return 	len(self.ch_list) >= 1 or len(self.report_list) >= 1 
+			return self.energy_available > 0 and self.bid_result > 0
+		elif action == 'receive':
+			#TODO
+			#return (self.acumulated_energy < self.storage_available and self.available_for_tick >0 )
+			return True
 
 
 	def execute(self, action):
-		if action == 'negotiate':
-			self.negotiate()
+		if action == 'bid_da':
+			self.bid_ad()
+		elif action == 'negotiate_po':
+			self.negotiate_po()
 		elif action == 'give':
-			self.give_power()
-		elif action == 'store':
-			self.store_remaining_energy()
-		elif action == 'get_reports':
-			self.ask_for_spending_report() 
-		elif action == 'redistribute':
-			self.redistribute_energy()
+			self.charge_da()
+		elif action == 'receive':
+			self.receive_energy_po()
 
 
 	def rebuildPlan(self):
@@ -158,6 +168,9 @@ class charger_handler(geographic_agent.geographic_agent):
 			#self.agentReactiveDecision()
 
 	'''
+	Actions
+	'''
+	'''
 	o Turn On/Off charging CH
 	o Calculate earnings
 	o Communicate with DA
@@ -168,9 +181,13 @@ class charger_handler(geographic_agent.geographic_agent):
 	o Communicate with CH
 		▪ Message other CHs of waiting time
 	'''
+	def charge_da(self):
+		da = self.da_queue[0]
+		energy_da = self.bid_result
+		da.give_energy(energy_da)
 
-	def toggle_on_off(self):
-		self.is_on = not self.is_on
+	def receive_energy_po(self):
+		return
 
 	def calculate_earnings(self):
 		pass
@@ -187,24 +204,40 @@ class charger_handler(geographic_agent.geographic_agent):
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
-		time_to_charge = math.ceil(total_energy_to_give / max_energy_per_tick)
-		return 
+		return math.ceil(total_energy_to_give / max_energy_per_tick)
 
 	def report_charge_time(self): #for each vehicle
 		pass
 
-	def charge_vehicle(self, da, energy):
-		da.give_energy(energy)
+
+	'''
+	Bid with DA
+	'''
+	def bid_da(self):
+		return
 
 
 	'''
-	Actions
+	Negotiate with PO
 	'''
+	def negotiate_po(self):
+		return
 
 
-	'''
-	Negotiations
-	'''
+	def compute_energyself(self):
+		total = 0
+		if(len(self.da_to_negotiate) > 0):
+			for da in self.da_to_negotiate:
+				total += da.get_energy_to_refill #TODO encontrar a função que recebe o valor que é preciso o carro ser carregado
+		
+		return total + (ch_passive_spend_energy * self.calculate_time_to_charge(total, max_per_tick)) #TODO receber o ch_passive_spend_energy e o max_per_tick de laguma maneira
+
+
+	def get_energy_po(self):
+		energy = self.compute_energy()
+		po.ask_for_energy(energy, utility) #TODO encontrar esta função no PO
+
+
 	def negotiate_power_receive(self):
 		# CH with PO
 		energy_needed = 0
@@ -220,5 +253,4 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 if __name__ == "__main__":
-
-	c = charger_handler(1, 1, "", 1, 1)
+	c = charger_handler(1, 1, "", 1, 1, "po")
