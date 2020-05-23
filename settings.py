@@ -19,7 +19,9 @@ total_evergy_of_simulation = simulation_time * total_energy_of_tick
 step_time_milisec = 0
 energy_price_buy = 0.002
 energy_price_sell = 0.01
-storage_available = simulation_time *standard_batery_size*(nr_vehicles/3) 
+storage_available = simulation_time *standard_batery_size*(nr_vehicles/3)
+
+#ch_passive_spend_power = 1
 
 #map
 point = (38.736828, -9.138222) # IST
