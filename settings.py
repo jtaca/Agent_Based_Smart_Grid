@@ -10,25 +10,27 @@ nr_priority_vehicles = 3 # random.choice(range(self.number_vehicles)) #7
 nr_disasters = 3
 nr_redistribution = 7
 
+
 max_source_flactuation = 1
 min_source_flactuation = 0.6
 standard_batery_size = 5000
-total_energy_of_tick = nr_vehicles*standard_batery_size
+total_energy_of_tick = (nr_vehicles/13)*standard_batery_size
 total_evergy_of_simulation = simulation_time * total_energy_of_tick 
-step_time_milisec = 1
+step_time_milisec = 0
 energy_price_buy = 0.002
 energy_price_sell = 0.01
-
+storage_available = simulation_time *standard_batery_size*(nr_vehicles/3) 
 
 #map
 point = (38.736828, -9.138222) # IST
+#point = (40.71427, -74.00597)
 
 place = 'Alameda_buildings'
 network_type='drive'
 bldg_color='grey'
 fig_height = 6
-dpi=93
-dist=1000
+dpi=93 #93
+dist=500
 default_width=4
 street_widths = {'footway' : 0.5,
                 'steps' : 0.5,
