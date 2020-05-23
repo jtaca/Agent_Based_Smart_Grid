@@ -27,6 +27,8 @@ class driver_assistant(geographic_agent.geographic_agent):
             geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'b', 'o', 20, 2)
         else:
             geographic_agent.geographic_agent.__init__(self, self.lat, self.lng, 'g', 'o', 20, 2)
+
+        #se precisa de ser carregado faz display numa cor diferente
         
         #For Animation
         self.route_idx = 0
