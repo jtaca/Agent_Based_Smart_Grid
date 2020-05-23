@@ -26,10 +26,14 @@ class energy_broker(geographic_agent.geographic_agent):
         if self.simulation.current_step in self.step_of_disaster:
             self.do_power_outage()
             aux_is_outage = True
+            self.concede_energy_to_po()
         elif self.simulation.current_step in self.step_of_redistribuition and  not aux_is_outage:
             self.do_power_redistribution()
-
-        self.concede_energy_to_po()
+            self.concede_energy_to_po()
+        else:
+            self.concede_energy_to_po()
+            
+        self.energy_history.append(self.energy_available)
            
         
         pass # check if its time of accident or not and acct accordingly
@@ -45,7 +49,7 @@ class energy_broker(geographic_agent.geographic_agent):
         pass
 
     def concede_energy_to_po(self):
-        self.energy_history.append(self.energy_available)
+        
         self.power_operative.recieve_energy(self.energy_available)
         pass
 
