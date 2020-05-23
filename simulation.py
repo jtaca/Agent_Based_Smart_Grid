@@ -44,8 +44,9 @@ class simulation():
         print(self.number_priority_vehicles)
         self.step_time_sec = settings.step_time_milisec
         self.agent_list = []
+        self.proactive_agents =[]
         #storage available for PO
-        self.storage_available = self.standard_batery_size*(self.number_vehicles/3) 
+        self.storage_available = settings.storage_available
         self.energy_price_buy = settings.energy_price_buy
         self.energy_price_sell = settings.energy_price_sell
         self.current_step = 0
@@ -163,9 +164,9 @@ class simulation():
         self.agent_list.append(c)
         
         
-        #lng, lat = map1.get_random_point()
-        #b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
-
+        lng, lat = map1.get_random_point()
+        b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell)
+        self.agent_list.append(b)
         
         lng, lat = map1.get_random_point()
         d = power_operative.power_operative(lat,lng, self.storage_available, self)
@@ -176,12 +177,15 @@ class simulation():
         self.agent_list.append(a)
 
         map1.add_agents(self.agent_list)
+        for agent in self.agent_list:
+            if agent.name != "power operative":
+                self.proactive_agents.append(agent)
         
         while self.current_step < self.steps:
         #for current_step in range(self.steps):
             if not self.stop_tog or self.do_step_arg:
-                #for agent in self.agent_list:
-                    #agent.act()
+                for agent in self.proactive_agents:
+                    agent.act()
                 c.animate()
 
 
