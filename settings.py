@@ -3,19 +3,19 @@ import random
 # SETTINGS #
 ############
 
-simulation_time = 300
-nr_vehicles = 40
-nr_stations = 20
-nr_priority_vehicles = 7 # random.choice(range(self.number_vehicles)) #7
-nr_disasters = 40
-nr_redistribution = 50
+simulation_time = 40
+nr_vehicles = 4
+nr_stations = 2
+nr_priority_vehicles = 2 # random.choice(range(self.number_vehicles)) #7
+nr_disasters =3
+nr_redistribution = 0
 
 draw_map = True #False #for way way better performance
 architecture = "N DA; N CH; 1 PO; 1 EB"
 
 max_source_flactuation = 1
 min_source_flactuation = 0.6
-standard_batery_size = 5000
+standard_batery_size = 50
 max_battery = 0.3 # treshold for charging
 cost_per_tick = 30 # used for stations
 total_energy_of_tick = (nr_vehicles/13)*standard_batery_size

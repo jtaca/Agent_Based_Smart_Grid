@@ -223,7 +223,6 @@ class simulation():
             self.prev_step = self.current_step
             gui.disp_time.setText(str(self.current_step))
             if self.current_step in self.step_of_disaster:
-                self.step_of_disaster.remove(self.current_step)
                 listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
                 gui.disp_outages.setText(str(self.number_disasters)+" next: "+listToStr)
 

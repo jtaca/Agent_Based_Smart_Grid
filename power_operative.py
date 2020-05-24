@@ -150,7 +150,7 @@ class power_operative(geographic_agent.geographic_agent):
 					
 				#self.report_list_negotiated.append(self.report_list[1])
 			else:
-				redistribution = redistribute_energy()
+				redistribution = self.redistribute_energy()
 				#for i in sorted_by_utility:
 				#for ch in self.ch_list
 				#	ch, energy_wanted, utility= ch.negotiate_power_receive(energy_wanted)
@@ -176,11 +176,24 @@ class power_operative(geographic_agent.geographic_agent):
 					self.report_list_negotiated.append(i)
 
 			if len(self.report_list_negotiated) < 1:
-				aux = self.sorted_by_utility[0]
+				aux = [0,0,0,0,0]
+				count = 0
+				max = 0
+				min = float("inf")
+				maxid = 0
+				for i in self.sorted_by_utility:
+					if max < i[1] and min > i[4]:
+						maxid = i[0]
+						max = i[1]
+						min = i[4]
+
+
+				for i in self.sorted_by_utility[maxid]:
+					aux[count]= i
+					count+=1
+				
 				aux[3] = self.available_for_tick
 				self.report_list_negotiated.append(aux)
-
-			return 
 
 
 			pass
@@ -201,10 +214,10 @@ class power_operative(geographic_agent.geographic_agent):
 					self.available_for_tick -= proposal[3]
 					print("PO: gave "+ str(proposal[3])+" to CH "+str(proposal[0]))
 
-				# elif self.acumulated_energy >= self.report_list_negotiated[index][1]:
-				# 	self.ch_list[self.report_list_negotiated[0]].get_energy_for_step(self.report_list_negotiated[index][1])
-				# 	self.acumulated_energy -= self.report_list_negotiated[index][1]
-				# 	print("PO: gots like: "+ str(self.available_for_tick))
+				elif self.acumulated_energy >= proposal[1]:
+					self.ch_list[proposal[0]].get_energy_for_step(proposal[1])
+					self.acumulated_energy -= proposal[1]
+					print("PO: gots like: "+ str(self.available_for_tick))
 
 				else :
 					print("PO: gots no power brah..")
@@ -218,8 +231,8 @@ class power_operative(geographic_agent.geographic_agent):
 			pass 
 
 		def recieve_energy(self, energy):
+			
 			self.available_for_tick =  energy +self.acumulated_energy
-			print("EB give: "+ str( energy))
 			#self.intention = 'give'
 			self.act()
 			#pass # current power = new + accumulated (form PO)
