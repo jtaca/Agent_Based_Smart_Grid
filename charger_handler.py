@@ -173,7 +173,10 @@ class charger_handler(geographic_agent.geographic_agent):
 	#action 'receive'
 	def get_energy_for_step(self, energy):
 		self.energy_available += energy
+		if self.energy_available > 0:
+			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'c','x',20)
 		print('CH: Yay! I gots da energy! '+str(energy))
+
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
@@ -225,8 +228,8 @@ class charger_handler(geographic_agent.geographic_agent):
 
 	def negotiate_power_receive(self):
 		# CH with PO
-		utility = 0
-		return self.id, self.energy_wanted, utility
+		utility = 0 # utility from DA
+		return self,  self.energy_wanted, utility
 
 	def negotiate_power_give(self):
 		# CH with DA
