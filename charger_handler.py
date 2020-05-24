@@ -207,7 +207,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		#utility = self.da_queue[0].get_utility()
 		utility = 0
 		total = self.cost_per_tick + self.energy_wanted
-		return self.id, self.energy_wanted, utility, total
+		return self.id, self.energy_wanted, utility, total, self.cost_per_tick
 
 	def compute_energy(self):
 		total = 0
