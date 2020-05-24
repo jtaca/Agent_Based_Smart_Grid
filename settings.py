@@ -11,7 +11,7 @@ nr_disasters = 40
 nr_redistribution = 50
 
 draw_map = True #False #for way way better performance
-
+architecture = "N DA; N CH; 1 PO; 1 EB"
 
 max_source_flactuation = 1
 min_source_flactuation = 0.6

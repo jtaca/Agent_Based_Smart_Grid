@@ -5,7 +5,7 @@ import geographic_agent
 class power_operative(geographic_agent.geographic_agent):
 
 		def __init__(self,lat,lng, storage_available,simulation):
-				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', "D", 100,2)
+				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', "D", 40,2)
 				self.name = "power operative"
 				self.acumulated_energy = 0
 				self.storage_available = storage_available
@@ -140,17 +140,13 @@ class power_operative(geographic_agent.geographic_agent):
 			
 
 		def negotiate(self):
-			# do da for to negotiate da shit
-
-			self.sorted_by_utility = sorted(self.report_list, key=lambda tup: tup[2])
 			sum_power = 0
-			for i in self.sorted_by_utility:
-				sum_power += i[1]
+			for i in self.report_list:
+				sum_power += i[3]
 				#agreed = False
 				#while not agreed:
 			if  sum_power <= self.available_for_tick:
-				for i in self.report_list:
-					self.report_list_negotiated = self.report_list
+				self.report_list_negotiated = self.report_list
 					
 				#self.report_list_negotiated.append(self.report_list[1])
 			else:
@@ -161,26 +157,30 @@ class power_operative(geographic_agent.geographic_agent):
 
 			#print(self.report_list)
 			#####################For now its the same
-		
-			
-
 			#print(self.report_list_negotiated)
 			self.gave = False
 			pass
 
 		def calculate_energy_used_in_tick(self):
+			#record energy used in tick and energy available along the simulation
 			pass
 
 		def redistribute_energy(self): 
 			#should calculate how much per ch 
 			#should output a vector
 			print('PO: Im redistributing people! Tighten da belt!')
-			utilities = []
-			energies = []
-			for i in self.sorted_by_utility:
-				utilities.append(i[2])
-				energies.append(i[1])
 			
+			self.sorted_by_utility = sorted(self.report_list, key=lambda tup: tup[1])
+			for i in self.sorted_by_utility:
+				if self.available_for_tick >= i[3]:
+					self.report_list_negotiated.append(i)
+
+			if len(self.report_list_negotiated) < 1:
+				aux = self.sorted_by_utility[0]
+				aux[3] = self.available_for_tick
+				self.report_list_negotiated.append(aux)
+
+			return 
 
 
 			pass
@@ -193,16 +193,19 @@ class power_operative(geographic_agent.geographic_agent):
 			pass
 
 		def give_power(self):
-			for index in range(len(self.report_list_negotiated)):
-				print(index)
-				if self.available_for_tick >= self.report_list_negotiated[index][1]:
-					self.ch_list[index].get_energy_for_step(self.report_list_negotiated[index][1])
-					self.available_for_tick -= self.report_list_negotiated[index][1]
-					print("PO: gots like: "+ str(self.available_for_tick))
-				elif self.acumulated_energy >= self.report_list_negotiated[index][1]:
-					self.ch_list[index].get_energy_for_step(self.report_list_negotiated[index][1])
-					self.acumulated_energy -= self.report_list_negotiated[index][1]
-					print("PO: gots like: "+ str(self.available_for_tick))
+			for proposal in self.report_list_negotiated:
+				print(proposal)
+				if self.available_for_tick >= proposal[3]:
+
+					self.ch_list[proposal[0]].get_energy_for_step(proposal[3])
+					self.available_for_tick -= proposal[3]
+					print("PO: gave "+ str(proposal[3])+" to CH "+str(proposal[0]))
+
+				# elif self.acumulated_energy >= self.report_list_negotiated[index][1]:
+				# 	self.ch_list[self.report_list_negotiated[0]].get_energy_for_step(self.report_list_negotiated[index][1])
+				# 	self.acumulated_energy -= self.report_list_negotiated[index][1]
+				# 	print("PO: gots like: "+ str(self.available_for_tick))
+
 				else :
 					print("PO: gots no power brah..")
 					#self.ch_list[index].get_energy_for_step(self.report_list_negotiated[index])

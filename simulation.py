@@ -174,7 +174,7 @@ class simulation():
         self.energy_price_sell = settings.energy_price_sell
         self.current_step = 0
         self.prev_step = -1
-        self.architecture = "Not yet chosen"
+        self.architecture = settings.architecture
         self.map1 = None
 
         #stats for simulation results
