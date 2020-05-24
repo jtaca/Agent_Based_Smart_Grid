@@ -21,8 +21,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.is_charging = False
         self.needs_charge = False
         self.time_to_wait = 0
-
-        self.battery_threshold = max_battery*0.3
+        self.need_charge = False
+        self.battery_threshold = battery * max_battery
+        self.battery_full_size = battery
 
         #Agent has the map
         self.map = map
@@ -147,7 +148,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         if self.need_charge:
             self.current_desires.append('Go charge')
         
-        elif self.proposals.any() and not self.is_charging:
+        elif any(self.proposals) and not self.is_charging:
             ch_Id = self.charging_station.get_Id()
             new_ch = change_station() 
             if new_ch.get_Id() != ch_Id:
