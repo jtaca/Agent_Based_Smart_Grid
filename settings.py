@@ -36,7 +36,7 @@ network_type='drive'
 bldg_color='grey'
 fig_height = 6
 dpi=93 #93
-dist=500
+dist=1000
 default_width=4
 street_widths = {'footway' : 0.5,
                 'steps' : 0.5,

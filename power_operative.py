@@ -5,7 +5,7 @@ import geographic_agent
 class power_operative(geographic_agent.geographic_agent):
 
 		def __init__(self,lat,lng, storage_available,simulation):
-				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', 'None', 100,2)
+				geographic_agent.geographic_agent.__init__(self,lat,lng,'k', "D", 100,2)
 				self.name = "power operative"
 				self.acumulated_energy = 0
 				self.storage_available = storage_available
@@ -174,6 +174,7 @@ class power_operative(geographic_agent.geographic_agent):
 		def redistribute_energy(self): 
 			#should calculate how much per ch 
 			#should output a vector
+			print('PO: Im redistributing people! Tighten da belt!')
 			utilities = []
 			energies = []
 			for i in self.sorted_by_utility:
