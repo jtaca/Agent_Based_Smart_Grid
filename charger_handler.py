@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -13,7 +13,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
 		self.is_charging = False
-		self.cost_per_tick = 10
+		self.cost_per_tick = cost_per_tick
 		self.simulation = simulation
 
 
@@ -164,8 +164,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		energy_da = self.bid_result
 		self.energy_available -= self.bid_result
 		da.give_energy(energy_da)
-		
-	
+			
 	# DA calls this when needs energy
 	def add_da_to_queue(self, da):
 		self.da_queue.append(da)
@@ -176,7 +175,6 @@ class charger_handler(geographic_agent.geographic_agent):
 		if self.energy_available > 0:
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'c','x',20)
 		print('CH: Yay! I gots da energy! '+str(energy))
-
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
@@ -196,20 +194,20 @@ class charger_handler(geographic_agent.geographic_agent):
 	def bid_da(self):
 		return
 
-
 	'''
 	Negotiate with PO
 	'''
 	# action 'negotiate_po'
-	def negotiate_po(self):
-		self.energy_wanted = self.da_queue[0].get_energy_wanted()
-		
-	
+	def negotiate_po(self): # não precisas de chamar esta função
+		#self.energy_wanted = self.da_queue[0].get_energy_wanted()
+		# 
+		pass
+
 	def report_spent_energy(self):
 		#utility = self.da_queue[0].get_utility()
 		utility = 0
-		return self.id, self.energy_wanted, utility
-
+		total = self.cost_per_tick + self.energy_wanted
+		return self.id, self.energy_wanted, utility, total
 
 	def compute_energy(self):
 		total = 0
@@ -219,17 +217,14 @@ class charger_handler(geographic_agent.geographic_agent):
 		
 		return total + (ch_passive_spend_energy * self.calculate_time_to_charge(total, max_per_tick)) #TODO receber o ch_passive_spend_energy e o max_per_tick de laguma maneira
 
-
 	def get_energy_po(self):
 		energy = self.compute_energy()
 		po.ask_for_energy(energy, utility) #TODO encontrar esta função no PO
 
-
-
 	def negotiate_power_receive(self):
 		# CH with PO
 		utility = 0 # utility from DA
-		return self,  self.energy_wanted, utility
+		return self,  self.energy_wanted, utility , 
 
 	def negotiate_power_give(self):
 		# CH with DA

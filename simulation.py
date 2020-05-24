@@ -36,7 +36,8 @@ class simulation():
             
         for i in range(self.number_stations):
             lng, lat = map1.get_random_point()
-            b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell, i, self)
+            cost_tick = settings.cost_per_tick * random.uniform(0.6,1)
+            b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell, i, self, cost_tick)
             self.agent_list.append(b)
         
         lng, lat = map1.get_random_point()

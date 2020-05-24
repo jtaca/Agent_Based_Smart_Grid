@@ -17,6 +17,7 @@ max_source_flactuation = 1
 min_source_flactuation = 0.6
 standard_batery_size = 5000
 max_battery = 0.3 # treshold for charging
+cost_per_tick = 30 # used for stations
 total_energy_of_tick = (nr_vehicles/13)*standard_batery_size
 total_evergy_of_simulation = simulation_time * total_energy_of_tick 
 step_time_milisec = 0
