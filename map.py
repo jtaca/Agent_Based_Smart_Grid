@@ -48,28 +48,32 @@ def make_plot(self,G):
     #lat = 38.7414116
     #lng = -9.143627785022142
     # correct previous things myabe create new plot
-    plt.close('all')
-    self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
-        filename=settings.place)
-        #plt.close('all')
-        #img = plt.imread('images/map_background.png')
-        #self.fig, self.ax = plt.subplots()
-        #self.ax.imshow(img)
+    if settings.draw_map:
+        plt.close('all')
 
-        #pass
-        #scat = plt.scatter(50,50,c='r', marker='+')
-        # image, with scatter point overlayed
-        #scat.remove()
-    
+        self.fig, self.ax = ox.plot_graph(G, fig_height=settings.fig_height, node_size=0, edge_color=ec, edge_linewidth=0.5, show=False, close=False, save=False,
+            filename=settings.place)
+            #plt.close('all')
+            #img = plt.imread('images/map_background.png')
+            #self.fig, self.ax = plt.subplots()
+            #self.ax.imshow(img)
 
-    for agent in self.agent_list:
-        try:
-            self.ax.scatter(agent.get_longitude(), agent.get_latitude(), 
-            c= agent.get_color, marker=agent.get_marker, s = agent.get_size,zorder=agent.get_zorder)
-        except:
-            self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10,zorder=1) 
+            #pass
+            #scat = plt.scatter(50,50,c='r', marker='+')
+            # image, with scatter point overlayed
+            #scat.remove()
+        for point in self.points_to_print:
+            self.ax.scatter(point[0][0], point[0][1], c=point[1], marker=point[2],s = point[3],zorder=4) 
 
-      
+
+        for agent in self.agent_list:
+            try:
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), 
+                c= agent.get_color, marker=agent.get_marker, s = agent.get_size,zorder=agent.get_zorder)
+            except:
+                self.ax.scatter(agent.get_longitude(), agent.get_latitude(), c='r', marker='x',s = 10,zorder=1) 
+
+        
              
         #ax.scatter(G.nodes[nn]['x'], G.nodes[nn]['y'], c='r', s=50, zorder=2)
     #ax.scatter(lng, lat, c='r', marker='x')
@@ -96,6 +100,8 @@ def make_plot(self,G):
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
     size = canvas.get_width_height()
+
+    self.points_to_print.clear()
 
     return self.fig, self.ax, raw_data, size
 
@@ -146,6 +152,7 @@ class map:
         #fig = plt.figure(linewidth=10, edgecolor="#04253a")
         plt.savefig('images/map_background.png')
 
+        self.points_to_print= []
         #generate random agent in map
         #x = random.uniform(self.min_x, self.max_x)
         #y = random.uniform(self.min_y, self.max_y)
@@ -176,11 +183,14 @@ class map:
 
 
     def reload_frame(self):
-
+        
         # get nearest node incident to nearest edge to reference point
         self.fig, self.ax, raw_data, size  = make_plot(self,self.G)
         return self.fig, self.ax, raw_data, size
         #Image('{}/{}.{}'.format(self.img_folder, settings.place, self.extension), height=self.size, width=self.size)
+
+    def add_points_to_print(self,point,c, m, s):
+        self.points_to_print.append((point,c, m, s))
 
     def get_map(self):
         return self.G

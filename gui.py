@@ -57,6 +57,7 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         font.setBold(True)
         font.setWeight(75)
+        
         self.btn_start.setFont(font)
         self.btn_start.setObjectName("btn_start")
         self.disp_time = QtWidgets.QLabel(self.centralwidget)
