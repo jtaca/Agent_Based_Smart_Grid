@@ -43,6 +43,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.route_idx = 0
         self.current_route = self.list_route[0]
         self.current_node = origin
+        self.destination = self.current_route[-1]
         self.last_destination = self.current_route[-1]
 
         #Environment View
@@ -106,7 +107,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
             action = self.plan[0]
-            if self.isPlanSound(action): #Always true
+            if self.isPlanSound(action):
                 print("DA "+str(self.id)+": My action " + action)
                 action = self.plan.pop(0)
                 self.execute(action)
@@ -222,6 +223,12 @@ class driver_assistant(geographic_agent.geographic_agent):
         if action == 'arrived':
             return agent_has_arrived(self.current_node, self.destination)
         
+        elif action == 'go to station':
+            if self.charging_station == None:
+                return False
+            else:
+                return True
+
         elif action == 'return':
             return not self.is_car_charging()
         
@@ -282,6 +289,11 @@ class driver_assistant(geographic_agent.geographic_agent):
         
         elif action == 'return':
             self.plan.insert(0, 'wait')
+
+        elif action == 'go to station':
+            #Couldnt find a station
+            self.plan.clear()
+            self.plan.append('move normaly')
         
 
     def reconsider(self):
