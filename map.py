@@ -217,14 +217,14 @@ class map:
         return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 
 
-        def get_closest_node(self, lng, lat ):
+    def get_closest_node(self, lng, lat ):
 
-            geom, u, v, marosca = ox.get_nearest_edge(self.G, (lat, lng))
-            nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, self.G.nodes[n]['y'], self.G.nodes[n]['x']))
+        geom, u, v, marosca = ox.get_nearest_edge(self.G, (lat, lng))
+        nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, self.G.nodes[n]['y'], self.G.nodes[n]['x']))
 
-            #print("random_point: "+lat+" , "+lng)
+        #print("random_point: "+lat+" , "+lng)
 
-            return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
+        return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 
 
     def clean_map(self):
