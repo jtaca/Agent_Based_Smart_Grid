@@ -23,6 +23,13 @@ class energy_broker(geographic_agent.geographic_agent):
     def act(self):
         self.energy_available = self.total_energy_of_tick
         aux_is_outage = False
+
+        if self.simulation.current_step in self.step_of_redistribuition and  not aux_is_outage:
+            self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'r','2',100)
+            self.do_power_redistribution()
+
+            self.step_of_redistribuition.remove(self.simulation.current_step)
+            
         if len(self.step_of_disaster) > 0 and self.simulation.current_step in self.step_of_disaster:
             self.do_power_outage()
             self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'k','2',100)
@@ -32,9 +39,7 @@ class energy_broker(geographic_agent.geographic_agent):
             self.step_of_disaster.remove(self.simulation.current_step)
             
             
-        elif self.simulation.current_step in self.step_of_redistribuition and  not aux_is_outage:
-            self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'r','2',100)
-            self.do_power_redistribution()
+        
             
         self.concede_energy_to_po()
 
