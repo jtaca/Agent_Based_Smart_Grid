@@ -26,7 +26,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.battery = initial_battery
         self.battery_threshold = battery_threshold * max_battery_capacity
         self.max_battery_capacity = max_battery_capacity
-        self.battery_spent = battery_spent
+        self.battery_spent_per_tick = self.max_battery_capacity * battery_spent
+        self.battery_needed = self.max_battery_capacity - self.battery
+        self.died = False
 
         #Agent has the map
         self.map = map
@@ -116,8 +118,8 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
             action = self.plan[0]
-            print("DA "+str(self.id)+": My action " + action)
             if self.isPlanSound(action): #Always true
+                print("DA "+str(self.id)+": My action " + action)
                 action = self.plan.pop(0)
                 self.execute(action)
             else:
@@ -140,15 +142,25 @@ class driver_assistant(geographic_agent.geographic_agent):
     # 
 
     def updateBeliefs(self):
-        self.battery -= self.max_battery_capacity * self.battery_spent
-        if self.low_battery():
-            print("DA "+str(self.id)+": BATTERY IS LOW")
-            self.need_charge = True
-        else:
-            self.need_charge = False
-        
         if self.is_car_charging():
             self.time_to_wait = self.ask_for_time()
+        
+        else:
+            if self.battery <= 0:
+                self.died = True
+
+            else:
+                self.died = False
+                self.battery -= self.battery_spent_per_tick
+                self.battery_needed = self.max_battery_capacity - self.battery
+
+            if self.low_battery():
+                print("DA "+str(self.id)+": BATTERY IS LOW")
+                self.need_charge = True
+            else:
+                self.need_charge = False
+
+        
 
     def deliberate(self):
         self.current_desires = []
@@ -156,13 +168,19 @@ class driver_assistant(geographic_agent.geographic_agent):
         print("DA "+str(self.id)+":Deliberate")
 
         #TOP Priority
-        if any(self.proposals) and not self.is_car_charging() and self.need_charge:
+        if any(self.proposals) and not self.is_car_charging() and self.need_charge and not self.died:
             ch_Id = self.charging_station.id()
             new_ch = change_station() 
-            if new_ch.id() != ch_Id: #There is a better option
+            if new_ch == None:
+                self.current_desires.append('Continue')
+
+            elif new_ch.id() != ch_Id: #There is a better option
                 self.charging_station = new_ch
                 self.proposals.clear()
                 self.current_desires.append('Change station')
+
+        elif self.need_charge and self.died:
+            self.current_desires.append('Die')
 
         elif self.need_charge:
             print("DA "+str(self.id)+":My desire to charge")
@@ -180,6 +198,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         return False
 
     def buildPlan(self):
+        if self.intention == 'Continue':
+            return
+        
         self.plan = []
 
         if self.intention == 'Go charge':
@@ -204,6 +225,9 @@ class driver_assistant(geographic_agent.geographic_agent):
                     
         elif self.intention == 'On route':
             self.plan.append('move normaly')
+        
+        elif self.intention == 'Die':
+            self.plan.append('stop')
 
 
     def isPlanSound(self, action):
@@ -231,10 +255,11 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.options = self.check_options()
             self.charging_station = self.decide()
             
-            print(self.charging_station.id)
+            if self.charging_station != None:
+                print(self.charging_station.id)
 
-            self.update_time_travel()
-            self.charging_station.add_da_to_queue_inc(self)
+                self.update_time_travel()
+                self.charging_station.add_da_to_queue_inc(self)
 
         elif action == 'go to station':
             self.teleport(action)
@@ -255,6 +280,9 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.route_idx += 1    
             self.current_route = self.list_route[self.route_idx % 3]
             self.destination = self.current_route[-1]
+        
+        elif action == 'stop':
+            self.teleport(action)
 
 
     def rebuildPlan(self, action):
@@ -268,6 +296,9 @@ class driver_assistant(geographic_agent.geographic_agent):
         
 
     def reconsider(self):
+        if self.died:
+            return True
+
         if any(self.proposals) and not self.is_car_charging():
             return True
         
@@ -288,6 +319,10 @@ class driver_assistant(geographic_agent.geographic_agent):
     # 
 
     def teleport(self, action):
+        if action == 'stop':
+            print('DA: Out of Battery')
+            return
+
         #Car is back on normal route
         if (self.current_node == self.destination and action == 'move normaly'):
             self.route_idx += 1    
@@ -411,18 +446,25 @@ class driver_assistant(geographic_agent.geographic_agent):
             relative_price = 1/(opt[2]/worst_price)
 
             station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
-            if self.is_possible_to_arrive(dist) and (dist != -1):
+            if self.is_possible_to_arrive(dist):
                 ch_ratings[opt[3]] = station_rating
-            else:
+            
+            elif self.is_possible_to_arrive(dist) and (dist == -1):
+                ch_ratings[opt[3]] = -1
+            
+            else: #Not enough battery it will die
                 ch_ratings[opt[3]] = 0
 
-        best_rating = 0
+        best_rating = -1
         best_id = 0
         for id in ch_ratings.keys():
             if ch_ratings[id] >=  best_rating:
                 best_rating = ch_ratings[id]
                 best_id = id
 
+        if best_rating == -1:
+            return None #Impossivel de calcular rota
+        
         ch = None
         for i in range(len(self.ch_list)):
             if best_id == self.ch_list[i].id:
@@ -430,30 +472,6 @@ class driver_assistant(geographic_agent.geographic_agent):
         
         return ch 
 
-        '''
-        #return an option
-        #opt = (Time, Node, Price, CHid)
-        best = [0, 0] # [Time or Distance or Price, Chid] 
-        for opt in self.options:
-            if self.distance_u >= self.time_u and self.distance_u >= self.price_u:
-                dist = calculate_distance(opt[1], current_position)
-                if dist <= best[0]:
-                    best[1] = opt[3]
-            
-            elif self.time_u >= self.distance_u and self.time_u >= self.price_u:
-                if opt[0] <= best[0]:
-                    best[1] = opt[3]
-
-            elif self.price_u >= self.distance_u and self.price_u >= self.time_u:
-                if opt[2] <= best[0]:
-                    best[1] = opt[3]
-    
-        ch = None
-        for i in range(len(self.ch_list)):
-            if best[1] == self.ch_list[i].id:
-                ch = self.ch_list[i]
-        
-        return ch '''
 
     def change_station(self):
         #Wort Wort Wort
@@ -484,17 +502,24 @@ class driver_assistant(geographic_agent.geographic_agent):
             relative_price = 1/(opt[2]/worst_price)
 
             station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
-            if self.is_possible_to_arrive(dist) and (dist != -1):
+            if self.is_possible_to_arrive(dist):
                 ch_ratings[opt[3]] = station_rating
-            else:
+            
+            elif self.is_possible_to_arrive(dist) and (dist != -1):
+                ch_ratings[opt[3]] = -1
+            
+            else: #Not enough battery it will die
                 ch_ratings[opt[3]] = 0
 
-        best_rating = 0
+        best_rating = -1
         best_id = 0
         for id in ch_ratings.keys():
             if ch_ratings[id] >=  best_rating:
                 best_rating = ch_ratings[id]
                 best_id = id
+
+        if best_rating == -1:
+            return None #Impossivel de calcular rota
 
         ch = self.charging_station
         if best_id != ch.id():
@@ -504,33 +529,6 @@ class driver_assistant(geographic_agent.geographic_agent):
         
         return ch 
         
-        '''changed = False
-        ch = self.charging_station
-        best_opt = ch.get_option()
-        best_chId = 0
-
-        #opt = (Time, Position, Price, CHid)
-        for opt in self.proposals:
-            if self.distance_u >= self.time_u and self.distance_u >= self.price_u:
-                dist1 = calculate_distance(opt[1], current_position)
-                dist2 = calculate_distance(best_opt[1], current_position)
-                if dist1 <= dist2:
-                    best_chId = opt[3]
-            
-            elif self.time_u >= self.distance_u and self.time_u >= self.price_u:
-                if opt[0] <= best_opt[0]:
-                    best_chId = opt[3]
-
-            elif self.price_u >= self.distance_u and self.price_u >= self.time_u:
-                if opt[2] <= best_opt[2]:
-                    best_chId = opt[3]
-
-        if best_chId != ch.id():
-            for i in range(len(self.proposals)):
-                if best_chId == self.proposals[i].id():
-                    ch = self.proposals[i]
-        
-        return ch'''
         
     #
     #   Communication with Charger Handlers
@@ -558,9 +556,25 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.proposals.append(proposal)
    
     def is_possible_to_arrive(self, dist):
-        return True
+        if dist == -1:
+            print('Dist =-1')
+            return False
+        
+        else:
+            time = calculate_time(dist)
+            battery_required = self.battery_spent_per_tick * time
 
-#            
+            if self.battery >= battery_required:
+                print("I can go to station")
+                return True
+            
+            else:
+                print('Not enough battery')
+                return False
+
+        return False
+
+#         
 #           A U X I L I A R   F U N C T I O N S 
 #
     def crossed_node_event(self):
