@@ -129,6 +129,7 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def act(self):
+		self.update_wait_time()
 		if len(self.plan) > 0 and self.succeededIntention() and not self.impossibleIntention():
 			while len(self.plan)>0:
 				action = self.plan.pop(0)
@@ -196,7 +197,8 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_available += energy
 		if self.energy_available > 0:
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'y', 'v',20)
-			self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
+			if(self.simulation.number_of_inactive_stations[self.simulation.current_step] > 0):
+				self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
 			self.isPoweredOn = True
 		else:
 			self.isPoweredOn = False
@@ -215,6 +217,8 @@ class charger_handler(geographic_agent.geographic_agent):
 		time = 0
 		for da in self.da_queue_inc:
 			time += da.time_of_travel
+		#print('time of wait: '+str(time))
+		self.simulation.time_to_charge_worst_case[self.simulation.current_step][self.id] = time
 		return time
 
 	def report_charge_time(self): #for each vehicle
