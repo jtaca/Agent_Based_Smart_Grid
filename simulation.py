@@ -22,6 +22,7 @@ class simulation():
         for i in range(self.number_vehicles):
             #lng, lat = map1.get_random_point()
             rand_bat = random.uniform(self.standard_batery_size* 0.6, self.standard_batery_size)
+            rand_chaged = random.uniform(rand_bat* 0.6, rand_bat)
             A,route  = self.generate_route()
             if (aux_priori>0):
                 aux_priori-= 1
@@ -31,7 +32,7 @@ class simulation():
             time_u = random.uniform(0,1)
             price_u = random.uniform(0,1)
             distance_u = random.uniform(0,1)
-            c = driver_assistant.driver_assistant(A, route, rand_bat, settings.max_battery , map1, is_priority,i, time_u, price_u, distance_u)
+            c = driver_assistant.driver_assistant(A, route, rand_chaged, rand_bat , map1, is_priority,i, time_u, price_u, distance_u)
             self.agent_list.append(c)
             
         for i in range(self.number_stations):
