@@ -240,6 +240,8 @@ class power_operative(geographic_agent.geographic_agent):
 			
 
 			self.available_for_tick =  energy +self.acumulated_energy
+
+			self.simulation.po_power.append(self.available_for_tick)
 			#self.intention = 'give'
 			self.act()
 			#pass # current power = new + accumulated (form PO)
