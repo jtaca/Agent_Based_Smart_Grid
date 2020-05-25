@@ -8,7 +8,7 @@ import osmnx as ox
 
 class driver_assistant(geographic_agent.geographic_agent):
 
-    def __init__(self, origin, route, initial_battery, max_battery_capacity, battery_threshold, battery_spent, map, is_priority, id, time_u, price_u, distance_u):
+    def __init__(self, origin, route, initial_battery, max_battery_capacity, battery_threshold, battery_spent, map, is_priority, id, time_u, price_u, distance_u, simulation):
         #Generic Attributes
         self.id = id
         self.name = "driver assistant"
@@ -16,6 +16,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.is_charging = False
         self.time_to_wait = 0
         self.need_charge = False
+        self.simulation = simulation
         
         #Battery stuff
         self.battery = initial_battery
@@ -83,6 +84,8 @@ class driver_assistant(geographic_agent.geographic_agent):
     def act(self):
 
         self.updateBeliefs()
+
+        print('DA'+str(self.id)+': My battery = '+str(self.battery))
 
         if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
             action = self.plan[0]
@@ -238,6 +241,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         
         elif action == 'wait':
             self.map.add_points_to_print((self.get_longitude(),self.get_latitude()),'y','+',20)
+            self.simulation.number_cars_charging[self.simulation.current_step] += 1
             print("DA id: %d is charging on station %d" , self.id, self.charging_station.id)
 
         elif action == 'return':
@@ -251,6 +255,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         
         elif action == 'stop':
             self.map.add_points_to_print((self.get_longitude(),self.get_latitude()),'k','o',20)
+            self.simulation.number_cars_without_energy[self.simulation.current_step] += 1
             self.teleport(action)
 
 

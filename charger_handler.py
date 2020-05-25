@@ -50,11 +50,11 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def succeededIntention(self): #igual ao isPlanSound()
-		if self.intention == 'bid_da':
-			return len(self.da_queue) > 0
-		elif self.intention == 'negotiate_po':
-			return True
-		elif self.intention == 'give':
+		#if self.intention == 'bid_da':
+		#	return len(self.da_queue) > 0
+		#if self.intention == 'negotiate_po':
+		#	return True
+		if self.intention == 'give':
 			return self.energy_available > 0
 		elif self.intention == 'wait':
 			return True
@@ -68,22 +68,22 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def isPlanSound(self,action):
-		if action == 'bid_da':
-			return len(self.da_queue) > 0
-		elif action == 'negotiate_po':
-			return True
-		elif action == 'give':
+		#if action == 'bid_da':
+		#	return len(self.da_queue) > 0
+		#if action == 'negotiate_po':
+		#	return True
+		if action == 'give':
 			return self.energy_available > 0
 		elif action == 'wait':
 			return True
 
 
 	def execute(self, action):
-		if action == 'bid_da':
-			self.bid_da()
-		elif action == 'negotiate_po':
-			self.negotiate_po()
-		elif action == 'give':
+		#if action == 'bid_da':
+		#	self.bid_da()
+		#if action == 'negotiate_po':
+		#	self.negotiate_po()
+		if action == 'give':
 			self.charge_da()
 		elif action == 'wait':
 			pass
@@ -100,13 +100,15 @@ class charger_handler(geographic_agent.geographic_agent):
 	def deliberate(self):
 		self.current_desires = []
 		if(len(self.da_queue) > 0):
-			if(self.energy_available == 0):
-				self.current_desires.append('negotiate_po')
+			#if(self.energy_available == 0):
+			#	self.current_desires.append('negotiate_po')
 
-			elif(self.energy_available > 0):
-				self.current_desires.append('bid_da')
+			if(self.energy_available > 0):
+				self.intention = 'give'
+			else:
+				self.intention = 'wait'
 
-			self.intention = self.current_desires[0]
+			#self.intention = self.current_desires[0]
 
 		else:
 			self.intention = 'wait'
@@ -118,14 +120,17 @@ class charger_handler(geographic_agent.geographic_agent):
 			self.plan.append('bid_da')
 			self.plan.append('give')
 
-		elif(self.intention == 'negotiate_po'):
-			self.plan.append('negotiate_po')
-			self.plan.append('receive')
+		elif(self.intention == 'give'):
+			#self.plan.append('negotiate_po')
+			#self.plan.append('receive')
 			#self.plan.append('bid_da')
-			#self.plan.append('give')
+			self.plan.append('give')
 		
 		elif(self.intention == 'wait'):
-			self.plan.append('wait')
+			self.plan.append('bid_da')
+			#self.plan.append('wait')
+
+		
 
 
 	def act(self):
@@ -165,29 +170,36 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	#action 'give'
 	def charge_da(self):
-		print('CH '+str(self.id)+': just charged someone')
+		
 		X = self.charger_flow #settings.charger_flow
 		da = self.da_queue[0]
+		for i in self.da_queue:
+			if(i.is_priority):
+				da = i
+				break
 		if(da.battery_needed <= 0):
 			self.da_queue.pop(0)
 			da.update_charged(False)
 		else:
-			da.update_charge(True)
+			da.update_charged(True)
 		da.battery += X
 		da.battery_needed -= X
 		self.energy_available -= X	
-		self.simulation.cost_of_system[self.simulation.current_step]+= X*self.energy_price_sell
+		print('CH '+str(self.id)+': just charged '+str(X)+' someone for '+str(self.energy_price_sell))
+		self.simulation.revenue_of_system[self.simulation.current_step]+= X*self.energy_price_sell
 		
 	
 	# DA calls this when needs energy
 	def add_da_to_queue(self, da):
+		print('CH '+str(self.id)+': I just added someone to the queue')
 		self.da_queue.append(da)
 	
 	def add_da_to_queue_inc(self, da):
+		print('CH '+str(self.id)+': I just added someone to the queue inc')
 		self.da_queue_inc.append(da)
 	
 	def remove_da_to_queue_inc(self, da):
-		print('queue size: '+ str(len(self.da_queue_inc)))
+		#print('queue size: '+ str(len(self.da_queue_inc)))
 		aux_poped = False
 		for i in range(len(self.da_queue_inc)):
 			if(not aux_poped and self.da_queue_inc[i].id == da.id):
@@ -208,11 +220,18 @@ class charger_handler(geographic_agent.geographic_agent):
 			if(self.simulation.number_of_inactive_stations[self.simulation.current_step] > 0):
 				self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
 				
-				if self.energy_available >= self.cost_per_tick:
-					self.energy_available -= self.cost_per_tick
-					self.simulation.cost_of_system[self.simulation.current_step]+= self.cost_per_tick*self.energy_price_buy
+			if self.energy_available >= self.cost_per_tick:
+				self.energy_available -= self.cost_per_tick
+				self.simulation.cost_of_system[self.simulation.current_step]+= self.cost_per_tick*self.energy_price_buy
+		
+				self.intention = 'give'
+				if  len(self.da_queue) >0:
+					self.charge_da()
 				
-			self.isPoweredOn = True
+				self.isPoweredOn = True
+			else:
+				self.isPoweredOn = False
+
 		else:
 			self.isPoweredOn = False
 		
@@ -229,6 +248,9 @@ class charger_handler(geographic_agent.geographic_agent):
 	def get_time_of_wait(self):
 		time = 0
 		for da in self.da_queue_inc:
+			if da.died:
+				self.da_queue_inc.remove(da)
+		for da in self.da_queue_inc:
 			time += da.time_of_travel
 		#print('time of wait: '+str(time))
 		self.simulation.time_to_charge_worst_case[self.simulation.current_step][self.id] = time
@@ -244,7 +266,7 @@ class charger_handler(geographic_agent.geographic_agent):
 	# action 'bid_da'
 	def bid_da(self):
 		for agent in self.simulation.agent_list:
-			if(agent.name == "driver assistant" and agent.needs_charge == True):
+			if(agent.name == "driver assistant" and agent.need_charge == True):
 				agent.receive_proposal(self.proposal)
 		return
 

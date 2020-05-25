@@ -146,7 +146,10 @@ class power_operative(geographic_agent.geographic_agent):
 				#agreed = False
 				#while not agreed:
 			if  sum_power <= self.available_for_tick:
-				self.report_list_negotiated = self.report_list
+				for agent in self.ch_list:
+					if agent.id == i[0] and len(agent.da_queue) > 0:
+				
+						self.report_list_negotiated.append(i)
 					
 				#self.report_list_negotiated.append(self.report_list[1])
 			else:
@@ -173,7 +176,11 @@ class power_operative(geographic_agent.geographic_agent):
 			self.sorted_by_utility = sorted(self.report_list, key=lambda tup: tup[1])
 			for i in self.sorted_by_utility:
 				if self.available_for_tick >= i[3]:
-					self.report_list_negotiated.append(i)
+					for agent in self.ch_list:
+
+						if agent.id == i[0] and len(agent.da_queue) > 0:
+							self.report_list_negotiated.append(i)
+					#self.report_list_negotiated.append(i)
 
 			if len(self.report_list_negotiated) < 1:
 				aux = [0,0,0,0,0]
@@ -181,19 +188,23 @@ class power_operative(geographic_agent.geographic_agent):
 				max = 0
 				min = float("inf")
 				maxid = 0
+				ch_credible = False
 				for i in self.sorted_by_utility:
-					if max < i[1] and min > i[4]:
-						maxid = i[0]
-						max = i[1]
-						min = i[4]
+					for agent in self.ch_list:
+						if agent.id == i[0] and len(agent.da_queue) > 0 and max < i[1] and min > i[4]:
+								self.report_list_negotiated.append(i)
+								maxid = i[0]
+								max = i[1]
+								min = i[4]
+								ch_credible = True
 
-
-				for i in self.sorted_by_utility[maxid]:
-					aux[count]= i
-					count+=1
-				
-				aux[3] = self.available_for_tick
-				self.report_list_negotiated.append(aux)
+				if ch_credible:
+					for i in self.sorted_by_utility[maxid]:
+						aux[count]= i
+						count+=1
+					
+					aux[3] = self.available_for_tick
+					self.report_list_negotiated.append(aux)
 
 
 			pass
