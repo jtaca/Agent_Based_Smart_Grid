@@ -15,6 +15,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.is_charging = False
 		self.cost_per_tick = 10
 		self.simulation = simulation
+		self.node = self.map.get_closest_node(lng, lat)
 
 
 		#if collective CH:
@@ -34,7 +35,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.da_queue_inc = []
 		self.bid_result = -1
 		self.energy_wanted = 0
-		self.proposal = [0, [lng, lat], self.energy_price_buy, self.id]
+		self.proposal = [0, self.map.get_closest_node(lng, lat), self.energy_price_buy, self.id]
 
 		'''
 		duvidas
@@ -180,8 +181,11 @@ class charger_handler(geographic_agent.geographic_agent):
 			if(self.da_queue_inc[i].id == da.id):
 				self.da_queue_inc.pop(i)
 
-	def update_wait_time():
+	def update_wait_time(self):
 		self.proposal[0] = self.get_time_of_wait() + self.calculate_time_to_charge()
+
+	def get_option(self):
+		return self.proposal
 
 	#action 'receive'
 	def get_energy_for_step(self, energy):
@@ -194,7 +198,7 @@ class charger_handler(geographic_agent.geographic_agent):
 	def calculate_time_to_charge(self):
 		if(len(self.da_queue) > 0):
 			return 500
-			return math.ceil(self.da_queue[0]. / max_energy_per_tick)
+			#return math.ceil(self.da_queue[0]. / max_energy_per_tick)
 		else:
 			return 0
 	
@@ -282,10 +286,10 @@ class test_po:
 		pass
 
 
-
+'''
 if __name__ == "__main__":
 	po = test_po()
-	ch = charger_handler(1, 1, "", 1, 1, po)
+	#ch = charger_handler(1, 1, "", 1, 1, po)
 
 	da = test_da(1, ch)
 	da.act()
@@ -301,7 +305,7 @@ if __name__ == "__main__":
 
 	ch.act() # aqui ja tem o plan e vai executa-lo (entra no if do act())
 
-	po.act()
+	po.act()'''
 
 
 
