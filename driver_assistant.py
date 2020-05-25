@@ -294,6 +294,9 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.current_route = self.list_route[self.route_idx % 3]
             self.destination = self.current_route[-1]
 
+        elif self.current_node == self.destination and action == 'move':
+            return
+
         if action == 'go to station':
             self.last_destination = self.destination
             ch_node = self.charging_station.get_node_position()
