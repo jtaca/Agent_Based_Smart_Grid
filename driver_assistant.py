@@ -116,7 +116,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
             action = self.plan[0]
-            print("My action " + action)
+            print("DA "+str(self.id)+": My action " + action)
             if self.isPlanSound(action): #Always true
                 action = self.plan.pop(0)
                 self.execute(action)
@@ -142,7 +142,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def updateBeliefs(self):
         self.battery -= self.max_battery_capacity * self.battery_spent
         if self.low_battery():
-            print("BATTERY IS LOW")
+            print("DA "+str(self.id)+": BATTERY IS LOW")
             self.need_charge = True
         else:
             self.need_charge = False
@@ -153,7 +153,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def deliberate(self):
         self.current_desires = []
 
-        print("Deliberate")
+        print("DA "+str(self.id)+":Deliberate")
 
         #TOP Priority
         if any(self.proposals) and not self.is_car_charging() and self.need_charge:
@@ -165,7 +165,7 @@ class driver_assistant(geographic_agent.geographic_agent):
                 self.current_desires.append('Change station')
 
         elif self.need_charge:
-            print("My desire to charge")
+            print("DA "+str(self.id)+":My desire to charge")
             self.current_desires.append('Go charge')
         
         elif not self.need_charge:
@@ -227,7 +227,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.teleport(action)
         
         elif action == 'decide station':
-            print("Deciding station")
+            print("DA "+str(self.id)+": Deciding station")
             self.options = self.check_options()
             self.charging_station = self.decide()
             
