@@ -231,7 +231,14 @@ class power_operative(geographic_agent.geographic_agent):
 			pass 
 
 		def recieve_energy(self, energy):
+
+			if self.acumulated_energy > 0:
+				self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'m','P',20)
+			if energy > 0:
+				self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'c','P',20)
 			
+			
+
 			self.available_for_tick =  energy +self.acumulated_energy
 			#self.intention = 'give'
 			self.act()
