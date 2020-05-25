@@ -42,7 +42,7 @@ class simulation():
         for i in range(self.number_stations):
             lng, lat = map1.get_random_point()
             cost_tick = settings.cost_per_tick * random.uniform(0.6,1)
-            b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell, i, self, cost_tick)
+            b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell, i, self, cost_tick, settings.charger_flow)
             self.agent_list.append(b)
             ch_list.append(b)
         
@@ -192,14 +192,18 @@ class simulation():
 
         #stats for simulation results
         self.po_power =[]
-        self.profit_margin = [] #costof mantaining vs money made
         self.number_of_inactive_stations = []
         self.time_to_charge_worst_case =[]
         ##must add method calculate time to charge in DA
         self.number_comunications = []
         #has values per each tick/step
         self.energy_history = []
-        
+
+        self.cost_of_system = []
+        self.revenue_of_system = []
+        self.profit = [] #costof mantaining vs money made
+        self.number_cars_charging =[]
+        self.number_cars_without_energy = []
          
         #get_time_of_wait
         
@@ -224,7 +228,28 @@ class simulation():
         gui.disp_outages.setText(str(self.number_disasters)+" next: "+listToStr)
         self.agent_list = []
         self.map1 = map1
+
+        self.po_power =[]
+        self.number_of_inactive_stations = []
+        self.time_to_charge_worst_case =[]
+        ##must add method calculate time to charge in DA
+        self.number_comunications = []
+        #has values per each tick/step
+        self.energy_history = []
+
+        self.cost_of_system = []
+        self.revenue_of_system = []
+        self.profit = [] #costof mantaining vs money made
+        self.number_cars_charging =[]
+        self.number_cars_without_energy = []
+
+
+
         for i in range(self.steps):
+            self.cost_of_system.append(0)
+            self.revenue_of_system.append(0)
+            self.profit.append(0)
+            
             self.number_of_inactive_stations.append(self.number_stations)
             aux = []
             for j in range(self.number_stations ):
@@ -291,6 +316,16 @@ class simulation():
         self.plot(list(range(self.steps)), self.number_of_inactive_stations,'Step', 'Number of Inactive Stations')
         print(self.po_power)
         self.plot(list(range(self.steps)), self.po_power,'Step', 'Energy available from Power Operative')
+        print(self.time_to_charge_worst_case)
+        aux_worst_list = []
+        for i in self.time_to_charge_worst_case:
+            aux_worst_list.append(max(i))
+        for i in range(self.steps):
+            self.profit [i] = (self.revenue_of_system[i]-self.cost_of_system[i])*1-settings.tax
+        print(self.profit)
+        self.plot(list(range(self.steps)), self.profit,'Step', 'Profit after Tax')
+        self.plot(list(range(self.steps)), aux_worst_list,'Step', 'Worst time to wait')
+        
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
