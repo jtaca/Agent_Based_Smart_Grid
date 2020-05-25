@@ -46,7 +46,6 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.last_destination = self.current_route[-1]
 
         #Environment View
-        self.car_view = self.determine_view() #Gives the next 3 nodes_coordenates, what the car sees
         self.da_list = []  #List of Driver Assistants
         self.ch_list = []  #List of Charger Handlers
         self.emotional_dict = self.init_emotional_dict()
