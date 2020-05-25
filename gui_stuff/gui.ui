@@ -121,7 +121,7 @@
    <widget class="QPushButton" name="btn_start">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>580</x>
       <y>20</y>
       <width>100</width>
       <height>50</height>
@@ -276,7 +276,7 @@
    <widget class="QPushButton" name="btn_step">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>720</x>
       <y>20</y>
       <width>100</width>
       <height>50</height>
@@ -296,7 +296,7 @@
    <widget class="QPushButton" name="btn_stop">
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>860</x>
       <y>20</y>
       <width>100</width>
       <height>50</height>
@@ -387,8 +387,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>740</x>
-      <y>780</y>
+      <x>690</x>
+      <y>740</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -397,15 +397,15 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../../../../../../../Desktop/EB.png</pixmap>
+     <pixmap>icons/eb2.png</pixmap>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>780</y>
-      <width>261</width>
+      <x>750</x>
+      <y>740</y>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -489,21 +489,21 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>780</y>
-      <width>161</width>
+      <x>980</x>
+      <y>700</y>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>PO</string>
+     <string>PO w/ Energy</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>740</x>
-      <y>700</y>
+      <x>470</x>
+      <y>780</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -518,9 +518,9 @@
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>700</y>
-      <width>261</width>
+      <x>530</x>
+      <y>780</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
@@ -536,8 +536,8 @@
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>740</x>
-      <y>740</y>
+      <x>470</x>
+      <y>820</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -552,9 +552,9 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>800</x>
-      <y>740</y>
-      <width>261</width>
+      <x>530</x>
+      <y>820</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
@@ -570,8 +570,8 @@
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>780</y>
+      <x>920</x>
+      <y>700</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -580,7 +580,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>icons/po.png</pixmap>
+     <pixmap>icons/got_energy.png</pixmap>
     </property>
    </widget>
    <widget class="QLabel" name="label_po_energy">
@@ -808,39 +808,10 @@
      <enum>Qt::AutoText</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="label_13">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>820</y>
-      <width>161</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PO qq</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_14">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>820</y>
-      <width>41</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../../../../../../../Desktop/po.png</pixmap>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_15">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>690</x>
       <y>820</y>
       <width>41</width>
       <height>31</height>
@@ -856,9 +827,9 @@
    <widget class="QLabel" name="label_16">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>750</x>
       <y>820</y>
-      <width>261</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -869,6 +840,156 @@
     </property>
     <property name="text">
      <string>EB Redistribution</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>780</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icons/eb_outage.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>780</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>EB Outage</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>700</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icons/po.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>700</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PO</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_19">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>740</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icons/PO_receiving_energyUntitled.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_20">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>740</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PO Charging</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_21">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>780</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icons/da_charging.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>780</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Normal DA charging</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_23">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>820</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>icons/da_charging2.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_24">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>820</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Priority DA charging</string>
     </property>
    </widget>
   </widget>

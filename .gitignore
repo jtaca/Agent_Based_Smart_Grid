@@ -13,3 +13,4 @@ __pycache__/power_operative.cpython-37.pyc
 __pycache__/charger_handler.cpython-37.pyc
 __pycache__/driver_assistant.cpython-37.pyc
 __pycache__/power_operative.cpython-37.pyc
+*.pyc
