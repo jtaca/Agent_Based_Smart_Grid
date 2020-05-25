@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -13,7 +13,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
 		self.is_charging = False
-		self.cost_per_tick = cost_per_tick
+		self.cost_per_tick = 10
 		self.simulation = simulation
 
 
@@ -31,8 +31,10 @@ class charger_handler(geographic_agent.geographic_agent):
 
 		#negotiation/bid
 		self.da_queue = []
+		self.da_queue_inc = []
 		self.bid_result = -1
 		self.energy_wanted = 0
+		self.proposal = [0, [lng, lat], self.energy_price_buy, self.id]
 
 		'''
 		duvidas
@@ -164,10 +166,22 @@ class charger_handler(geographic_agent.geographic_agent):
 		energy_da = self.bid_result
 		self.energy_available -= self.bid_result
 		da.give_energy(energy_da)
-			
+		
+	
 	# DA calls this when needs energy
 	def add_da_to_queue(self, da):
 		self.da_queue.append(da)
+	
+	def add_da_to_queue_inc(self, da):
+		self.da_queue_inc.append(da)
+	
+	def remove_da_to_queue_inc(self, da):
+		for i in range(self.da_queue_inc):
+			if(self.da_queue_inc[i].id == da.id):
+				self.da_queue_inc.pop(i)
+
+	def update_wait_time():
+		self.proposal[0] = self.get_time_of_wait() + self.calculate_time_to_charge()
 
 	#action 'receive'
 	def get_energy_for_step(self, energy):
@@ -177,11 +191,18 @@ class charger_handler(geographic_agent.geographic_agent):
 		print('CH: Yay! I gots da energy! '+str(energy))
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
-	def calculate_time_to_charge(self, total_energy_to_give, max_energy_per_tick):
-		return math.ceil(total_energy_to_give / max_energy_per_tick)
+	def calculate_time_to_charge(self):
+		if(len(self.da_queue) > 0):
+			return 500
+			return math.ceil(self.da_queue[0]. / max_energy_per_tick)
+		else:
+			return 0
 	
 	def get_time_of_wait(self):
-		return
+		time = 0
+		for da in self.da_queue_inc:
+			time += da.time_of_travel
+		return time
 
 	def report_charge_time(self): #for each vehicle
 		pass
@@ -192,7 +213,11 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	# action 'bid_da'
 	def bid_da(self):
+		for agent in self.simulation.agent_list():
+			if(agent.name == "driver assistant" and agent.needs_charge == True):
+				agent.receive_proposal(self.proposal)
 		return
+
 
 	'''
 	Negotiate with PO
@@ -200,14 +225,16 @@ class charger_handler(geographic_agent.geographic_agent):
 	# action 'negotiate_po'
 	def negotiate_po(self): # não precisas de chamar esta função
 		#self.energy_wanted = self.da_queue[0].get_energy_wanted()
-		# 
+		#
 		pass
-
+		
+	
 	def report_spent_energy(self):
 		#utility = self.da_queue[0].get_utility()
 		utility = 0
 		total = self.cost_per_tick + self.energy_wanted
 		return self.id, self.energy_wanted, utility, total, self.cost_per_tick
+
 
 	def compute_energy(self):
 		total = 0
@@ -217,14 +244,17 @@ class charger_handler(geographic_agent.geographic_agent):
 		
 		return total + (ch_passive_spend_energy * self.calculate_time_to_charge(total, max_per_tick)) #TODO receber o ch_passive_spend_energy e o max_per_tick de laguma maneira
 
+
 	def get_energy_po(self):
 		energy = self.compute_energy()
 		po.ask_for_energy(energy, utility) #TODO encontrar esta função no PO
 
+
+
 	def negotiate_power_receive(self):
 		# CH with PO
-		utility = 0 # utility from DA
-		return self,  self.energy_wanted, utility , 
+		utility = 0
+		return self.id, self.energy_wanted, utility
 
 	def negotiate_power_give(self):
 		# CH with DA
