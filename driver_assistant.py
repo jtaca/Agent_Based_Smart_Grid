@@ -271,6 +271,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         elif action == 'return':
             self.charging_station = None
+            self.init_emotional_dict()
             self.teleport(action)
         
         elif action == 'resume route':
