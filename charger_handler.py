@@ -173,6 +173,10 @@ class charger_handler(geographic_agent.geographic_agent):
 		
 		X = self.charger_flow #settings.charger_flow
 		da = self.da_queue[0]
+		for i in self.da_queue:
+			if(i.is_priority):
+				da = i
+				break
 		if(da.battery_needed <= 0):
 			self.da_queue.pop(0)
 			da.update_charged(False)
