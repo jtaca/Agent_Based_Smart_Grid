@@ -18,6 +18,7 @@ class simulation():
     def test(self,map1,gui):
         self.start_simulation(map1,gui)
 
+        da_list = []
         aux_priori = self.number_priority_vehicles
         for i in range(self.number_vehicles):
             #lng, lat = map1.get_random_point()
@@ -32,14 +33,20 @@ class simulation():
             time_u = random.uniform(0,1)
             price_u = random.uniform(0,1)
             distance_u = random.uniform(0,1)
-            c = driver_assistant.driver_assistant(A, route, rand_chaged, rand_bat , map1, is_priority,i, time_u, price_u, distance_u)
+            c = driver_assistant.driver_assistant(A, route, rand_chaged, rand_bat, settings.max_battery, settings.battery_percentage_spend_per_tick, map1, is_priority,i, time_u, price_u, distance_u)
             self.agent_list.append(c)
-            
+            da_list.append(c)
+        
+        ch_list = []
         for i in range(self.number_stations):
             lng, lat = map1.get_random_point()
             cost_tick = settings.cost_per_tick * random.uniform(0.6,1)
             b = charger_handler.charger_handler(lat,lng, map1, self.energy_price_buy, self.energy_price_sell, i, self, cost_tick)
             self.agent_list.append(b)
+            ch_list.append(b)
+        
+        for i in range(self.number_vehicles):
+            da_list[i].init_ch_list(ch_list)
         
         lng, lat = map1.get_random_point()
         d = power_operative.power_operative(lat,lng, self.storage_available, self)
