@@ -96,7 +96,7 @@ class Ui_MainWindow(object):
         self.disp_priority.setTextFormat(QtCore.Qt.AutoText)
         self.disp_priority.setObjectName("disp_priority")
         self.disp_outages = QtWidgets.QLabel(self.centralwidget)
-        self.disp_outages.setGeometry(QtCore.QRect(240, 220, 131, 31))
+        self.disp_outages.setGeometry(QtCore.QRect(240, 220, 181, 31))
         self.disp_outages.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.label_redistribution.setFont(font)
         self.label_redistribution.setObjectName("label_redistribution")
         self.disp_redistribution = QtWidgets.QLabel(self.centralwidget)
-        self.disp_redistribution.setGeometry(QtCore.QRect(240, 260, 111, 31))
+        self.disp_redistribution.setGeometry(QtCore.QRect(240, 260, 181, 31))
         self.disp_redistribution.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -244,7 +244,7 @@ class Ui_MainWindow(object):
         self.disp_car_charging.setTextFormat(QtCore.Qt.AutoText)
         self.disp_car_charging.setObjectName("disp_car_charging")
         self.disp_po_energy = QtWidgets.QLabel(self.centralwidget)
-        self.disp_po_energy.setGeometry(QtCore.QRect(240, 300, 111, 31))
+        self.disp_po_energy.setGeometry(QtCore.QRect(240, 300, 181, 31))
         self.disp_po_energy.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
         self.disp_worst_time.setTextFormat(QtCore.Qt.AutoText)
         self.disp_worst_time.setObjectName("disp_worst_time")
         self.disp_architecture = QtWidgets.QLabel(self.centralwidget)
-        self.disp_architecture.setGeometry(QtCore.QRect(240, 460, 111, 31))
+        self.disp_architecture.setGeometry(QtCore.QRect(240, 460, 181, 31))
         self.disp_architecture.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(16)
@@ -494,6 +494,7 @@ class Ui_MainWindow(object):
         bytesPerLine = ch * w
         img = QtGui.QImage(data, w, h, bytesPerLine, QtGui.QImage.Format_ARGB32)
         return img.rgbSwapped()
+
 
 if __name__ == "__main__":
     import sys
