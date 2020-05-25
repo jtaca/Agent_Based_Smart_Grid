@@ -47,6 +47,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         #Environment View
         self.ch_list = []  #List of Charger Handlers
+        self.emotional_dict = self.init_emotional_dict()
     
         self.options = []
         self.charging_station = None #CH of choice
@@ -74,6 +75,17 @@ class driver_assistant(geographic_agent.geographic_agent):
     def init_ch_list(self, ch):
         self.ch_list = ch
 
+    #Initialize the emotional dict
+    def init_emotional_dict(self):
+        #emotions are a list of values between 0 and 1
+        emotions = self.generate_emotions()
+        i = 0
+        for ch in ch_list:
+            self.emotional_dict[ch.id] = emotions[i]
+            i += 1
+
+    def generate_emotions(self):
+        emotions = np.random.randint(low=0, high=5, size=len(self.ch_list))
 
     #
     # 
@@ -322,9 +334,11 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.set_latitude(self.lat)
         self.set_longitude(self.lng)
         
-        self.current_route = self.current_route[1:]
-        self.current_node = self.current_route[0]
-        
+        try:
+            self.current_route = self.current_route[1:]
+            self.current_node = self.current_route[0]           
+        except:
+            self.current_node = self.destination
       
     def low_battery(self):
         return self.battery <= self.battery_threshold 
