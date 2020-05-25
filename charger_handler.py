@@ -192,6 +192,9 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_available += energy
 		if self.energy_available > 0:
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'y', 'v',20)
+			self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
+
+		
 		print('CH: Yay! I gots da energy! '+str(energy))
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
