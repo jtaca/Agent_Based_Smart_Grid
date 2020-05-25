@@ -278,7 +278,7 @@ class Ui_MainWindow(object):
         self.label_15 = QtWidgets.QLabel(self.centralwidget)
         self.label_15.setGeometry(QtCore.QRect(690, 820, 41, 31))
         self.label_15.setText("")
-        self.label_15.setPixmap(QtGui.QPixmap("gui_stuff/icons/eb2.png"))
+        self.label_15.setPixmap(QtGui.QPixmap("gui_stuff/icons/eb_redistribution.png"))
         self.label_15.setObjectName("label_15")
         self.label_16 = QtWidgets.QLabel(self.centralwidget)
         self.label_16.setGeometry(QtCore.QRect(750, 820, 151, 31))
