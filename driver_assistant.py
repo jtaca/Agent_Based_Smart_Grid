@@ -398,7 +398,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             
             relative_price = 1/(opt[2]/worst_price)
 
-            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
+            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance + + self.emotional_dict[opt[3]]
             if self.is_possible_to_arrive(dist):
                 ch_ratings[opt[3]] = station_rating
             
@@ -422,7 +422,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         for i in range(len(self.ch_list)):
             if best_id == self.ch_list[i].id:
                 ch = self.ch_list[i]
-        
+
         return ch 
 
 
@@ -454,7 +454,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             
             relative_price = 1/(opt[2]/worst_price)
 
-            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
+            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance + self.emotional_dict[opt[3]]
             if self.is_possible_to_arrive(dist):
                 ch_ratings[opt[3]] = station_rating
             
