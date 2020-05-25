@@ -16,6 +16,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.cost_per_tick = cost_per_tick
 		self.simulation = simulation
 		self.node = self.map.get_closest_node(lng, lat)
+		self.isPoweredOn = True
 
 
 		#if collective CH:
@@ -177,8 +178,11 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.da_queue_inc.append(da)
 	
 	def remove_da_to_queue_inc(self, da):
+		print('queue size: '+ str(len(self.da_queue_inc)))
+		aux_poped = False
 		for i in range(len(self.da_queue_inc)):
-			if(self.da_queue_inc[i].id == da.id):
+			if(not aux_poped and self.da_queue_inc[i].id == da.id):
+				aux_poped = True
 				self.da_queue_inc.pop(i)
 
 	def update_wait_time(self):
@@ -193,9 +197,11 @@ class charger_handler(geographic_agent.geographic_agent):
 		if self.energy_available > 0:
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'y', 'v',20)
 			self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
-
+			self.isPoweredOn = True
+		else:
+			self.isPoweredOn = False
 		
-		print('CH: Yay! I gots da energy! '+str(energy))
+		print('CH '+str(self.id)+': Yay! I energy! '+str(energy))
 
 	#def forcast_energy_spendure(self): #for vehicles waiting
 	def calculate_time_to_charge(self):
@@ -220,7 +226,7 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	# action 'bid_da'
 	def bid_da(self):
-		for agent in self.simulation.agent_list():
+		for agent in self.simulation.agent_list:
 			if(agent.name == "driver assistant" and agent.needs_charge == True):
 				agent.receive_proposal(self.proposal)
 		return

@@ -226,6 +226,11 @@ class simulation():
         self.map1 = map1
         for i in range(self.steps):
             self.number_of_inactive_stations.append(self.number_stations)
+            aux = []
+            for j in range(self.number_stations ):
+                aux.append(0)
+            self.time_to_charge_worst_case.append(aux)   
+            
 
     def do_step(self):
         self.do_step_arg = True
@@ -283,12 +288,14 @@ class simulation():
     def graph(self):
         self.graph_n = 0
         print(self.number_of_inactive_stations)
+        self.plot(list(range(self.steps)), self.number_of_inactive_stations,'Step', 'Number of Inactive Stations')
         print(self.po_power)
+        self.plot(list(range(self.steps)), self.po_power,'Step', 'Energy available from Power Operative')
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
                 print(len(self.energy_history))
-                self.plot(list(range(self.steps)), self.energy_history,'Step', 'Energy available from source')
+                self.plot(list(range(self.steps)), self.energy_history,'Step', 'Energy available from Energy Broker')
                 
                 break
             else:
