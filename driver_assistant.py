@@ -282,6 +282,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.destination = self.current_route[-1]
         
         elif action == 'stop':
+            self.map.add_points_to_print((self.get_longitude(),self.get_latitude()),'k','o',20)
             self.teleport(action)
 
 
@@ -557,19 +558,15 @@ class driver_assistant(geographic_agent.geographic_agent):
    
     def is_possible_to_arrive(self, dist):
         if dist == -1:
-            print('Dist =-1')
             return False
         
         else:
             time = calculate_time(dist)
             battery_required = self.battery_spent_per_tick * time
-
             if self.battery >= battery_required:
-                print("I can go to station")
                 return True
             
             else:
-                print('Not enough battery')
                 return False
 
         return False
