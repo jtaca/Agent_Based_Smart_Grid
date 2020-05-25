@@ -51,17 +51,17 @@ class energy_broker(geographic_agent.geographic_agent):
         pass # check if its time of accident or not and acct accordingly
 
     def do_power_outage(self):
-        print("outage")
+        print("EB: outage")
         self.energy_available = 0
         pass
     
     def do_power_redistribution(self): 
-        print("redistribution")
+        print("EB: redistribution")
         self.energy_available =  random.uniform(self.flactuation_min, self.flactuation_max) # """self.total_energy_of_tick -""" 
         pass
 
     def concede_energy_to_po(self):
-        print("EB give: "+ str( self.energy_available))
+        print("EB: I give to PO  "+ str( self.energy_available))
         self.power_operative.recieve_energy(self.energy_available)
         pass
 
