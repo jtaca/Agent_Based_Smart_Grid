@@ -34,7 +34,7 @@ class simulation():
             time_u = random.uniform(0,1)
             price_u = random.uniform(0,1)
             distance_u = random.uniform(0,1)
-            c = driver_assistant.driver_assistant(A, route, rand_chaged, rand_bat, settings.max_battery, settings.battery_percentage_spend_per_tick, map1, is_priority,i, time_u, price_u, distance_u)
+            c = driver_assistant.driver_assistant(A, route, rand_chaged, rand_bat, settings.max_battery, settings.battery_percentage_spend_per_tick, map1, is_priority,i, time_u, price_u, distance_u, self)
             self.agent_list.append(c)
             da_list.append(c)
         
@@ -243,6 +243,7 @@ class simulation():
 
         self.number_cars_charging =[]
         self.number_cars_without_energy = []
+        self.accumulated_profit = []
 
 
 
@@ -253,6 +254,7 @@ class simulation():
 
             self.number_cars_charging.append(0)
             self.number_cars_without_energy.append(0)
+            self.accumulated_profit.append(0)
             
             self.number_of_inactive_stations.append(self.number_stations)
             aux = []
@@ -316,24 +318,35 @@ class simulation():
 
     def graph(self):
         self.graph_n = 0
-        print(self.number_of_inactive_stations)
+        #print(self.number_of_inactive_stations)
         self.plot(list(range(self.steps)), self.number_of_inactive_stations,'Step', 'Number of Inactive Stations')
-        print(self.po_power)
+        #print(self.po_power)
         self.plot(list(range(self.steps)), self.po_power,'Step', 'Energy available from Power Operative')
-        print(self.time_to_charge_worst_case)
+        #print(self.time_to_charge_worst_case)
         aux_worst_list = []
         for i in self.time_to_charge_worst_case:
             aux_worst_list.append(max(i))
-        print('revenue')
-        print(self.revenue_of_system)
-        print('cost')
-        print(self.cost_of_system)
+        #print('revenue')
+        #print(self.revenue_of_system)
+        #print('cost')
+        #print(self.cost_of_system)
         for i in range(self.steps):
             self.profit [i] = (self.revenue_of_system[i]*(1-settings.tax))-self.cost_of_system[i]
-        print(self.profit)
+        #print(self.profit)
         self.plot(list(range(self.steps)), self.profit,'Step', 'Profit after Tax')
+        
+        
+        for i in range(len(self.profit)):
+            if i == 0:
+                self.accumulated_profit[i] += self.profit[i]
+            else:
+                for j in range(i):
+                    self.accumulated_profit[i] += self.profit[j]
+        self.plot(list(range(self.steps)), self.accumulated_profit,'Step', 'Accumulated profit after Tax')
         self.plot(list(range(self.steps)), aux_worst_list,'Step', 'Worst time to wait')
 
+        self.plot(list(range(self.steps)), self.number_cars_charging,'Step', 'Number of cars charging')
+        self.plot(list(range(self.steps)), self.number_cars_without_energy,'Step', 'Number of cars with dead battery')
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
