@@ -85,7 +85,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         #emotions are a list of values between 0 and 1
         emotions = self.generate_emotions()
         i = 0
-        for ch in ch_list:
+        for ch in self.ch_list:
             self.emotional_dict[ch.id] = emotions[i]
             i += 1
 
@@ -244,8 +244,6 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.charging_station = self.decide()
             
             if self.charging_station != None:
-                print(self.charging_station.id)
-
                 self.update_time_travel()
                 self.charging_station.add_da_to_queue_inc(self)
 
