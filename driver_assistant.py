@@ -227,7 +227,6 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.charging_station = self.decide()
             
             if self.charging_station != None:
-                print(self.charging_station.id)
 
                 self.update_time_travel()
                 self.charging_station.add_da_to_queue_inc(self)
@@ -347,7 +346,6 @@ class driver_assistant(geographic_agent.geographic_agent):
         worst_price = 1
 
         #opt = (Time, Node, Price, CH_id)
-        print(self.options)
         for opt in self.options:
             #Calulate worst time
             if opt[0] >= worst_time_to_wait:
