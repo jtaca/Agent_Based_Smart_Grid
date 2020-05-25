@@ -46,6 +46,8 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.last_destination = self.current_route[-1]
 
         #Environment View
+        self.car_view = self.determine_view() #Gives the next 3 nodes_coordenates, what the car sees
+        self.da_list = []  #List of Driver Assistants
         self.ch_list = []  #List of Charger Handlers
         self.emotional_dict = self.init_emotional_dict()
     
@@ -70,6 +72,10 @@ class driver_assistant(geographic_agent.geographic_agent):
     #
     #  
     
+      
+    #Initialize the Driver Assistants List
+    def init_da_list(self, da):
+        self.da_list = da
     
     #Initialize the Charger Handlers List
     def init_ch_list(self, ch):
@@ -239,6 +245,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.charging_station = self.decide()
             
             if self.charging_station != None:
+                print(self.charging_station.id)
 
                 self.update_time_travel()
                 self.charging_station.add_da_to_queue_inc(self)
@@ -360,6 +367,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         worst_price = 1
 
         #opt = (Time, Node, Price, CH_id)
+        print(self.options)
         for opt in self.options:
             #Calulate worst time
             if opt[0] >= worst_time_to_wait:
@@ -509,8 +517,6 @@ class driver_assistant(geographic_agent.geographic_agent):
 #         
 #           A U X I L I A R   F U N C T I O N S 
 #
- 
-
 def get_coordinates_of_node(G, node):
     coord = np.array([G.nodes[node]['x'], G.nodes[node]['y']])
     return coord

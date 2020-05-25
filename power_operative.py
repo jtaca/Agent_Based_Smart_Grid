@@ -190,13 +190,12 @@ class power_operative(geographic_agent.geographic_agent):
 				maxid = 0
 				ch_credible = False
 				for i in self.sorted_by_utility:
-					for agent in self.ch_list:
-						if agent.id == i[0] and len(agent.da_queue) > 0 and max < i[1] and min > i[4]:
-								self.report_list_negotiated.append(i)
-								maxid = i[0]
-								max = i[1]
-								min = i[4]
-								ch_credible = True
+					if agent.id == i[0] and len(agent.da_queue) > 0 and max < i[1] and min > i[4]:
+							self.report_list_negotiated.append(i)
+							maxid = i[0]
+							max = i[1]
+							min = i[4]
+							ch_credible = True
 
 				if ch_credible:
 					for i in self.sorted_by_utility[maxid]:
