@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -13,7 +13,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_price_buy = energy_price_buy
 		self.energy_price_sell = energy_price_sell
 		self.is_charging = False
-		self.cost_per_tick = 10
+		self.cost_per_tick = cost_per_tick
 		self.simulation = simulation
 		self.node = self.map.get_closest_node(lng, lat)
 
