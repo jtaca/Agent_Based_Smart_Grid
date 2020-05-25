@@ -227,6 +227,10 @@ class simulation():
                 listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
                 gui.disp_outages.setText(str(self.number_disasters)+" next: "+listToStr)
 
+            if self.current_step in self.step_of_redistribuition:
+                listToStr = ' '.join([str(elem) for elem in self.step_of_redistribuition])
+                gui.disp_redistribution.setText(str(self.step_of_redistribuition)+" next: "+listToStr)
+
             gui.reload_map()
             self.do_step_arg = False
 
