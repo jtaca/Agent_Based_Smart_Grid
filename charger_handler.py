@@ -177,7 +177,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.da_queue_inc.append(da)
 	
 	def remove_da_to_queue_inc(self, da):
-		for i in range(self.da_queue_inc):
+		for i in range(len(self.da_queue_inc)):
 			if(self.da_queue_inc[i].id == da.id):
 				self.da_queue_inc.pop(i)
 
@@ -264,6 +264,9 @@ class charger_handler(geographic_agent.geographic_agent):
 		# CH with DA
 		#meter DA a pedir o memso power
 		pass
+
+	def get_node_position(self):
+		return self.node
 
 
 

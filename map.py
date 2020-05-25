@@ -224,7 +224,7 @@ class map:
 
         #print("random_point: "+lat+" , "+lng)
 
-        return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
+        return self.G.nodes[nn]['osmid']
 
 
     def clean_map(self):

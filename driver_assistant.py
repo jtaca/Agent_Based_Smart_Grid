@@ -87,7 +87,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         self.da_list = da
     
     #Initialize the Charger Handlers List
-    def init_da_list(self, ch):
+    def init_ch_list(self, ch):
         self.ch_list = ch
 
     def determine_view(self):
@@ -116,6 +116,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         if len(self.plan)>0 and self.succeededIntention() and not self.impossibleIntention():
             action = self.plan[0]
+            print("My action " + action)
             if self.isPlanSound(action): #Always true
                 action = self.plan.pop(0)
                 self.execute(action)
@@ -141,6 +142,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def updateBeliefs(self):
         self.battery -= self.max_battery_capacity * self.battery_spent
         if self.low_battery():
+            print("BATTERY IS LOW")
             self.need_charge = True
         else:
             self.need_charge = False
@@ -150,6 +152,8 @@ class driver_assistant(geographic_agent.geographic_agent):
 
     def deliberate(self):
         self.current_desires = []
+
+        print("Deliberate")
 
         #TOP Priority
         if any(self.proposals) and not self.is_car_charging() and self.need_charge:
@@ -161,6 +165,7 @@ class driver_assistant(geographic_agent.geographic_agent):
                 self.current_desires.append('Change station')
 
         elif self.need_charge:
+            print("My desire to charge")
             self.current_desires.append('Go charge')
         
         elif not self.need_charge:
@@ -177,7 +182,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     def buildPlan(self):
         self.plan = []
 
-        if self.intention == 'Go Charge':
+        if self.intention == 'Go charge':
             self.plan.append('decide station')
             self.plan.append('go to station')
             self.plan.append('move')
@@ -222,9 +227,12 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.teleport(action)
         
         elif action == 'decide station':
+            print("Deciding station")
             self.options = self.check_options()
             self.charging_station = self.decide()
             
+            print(self.charging_station.id)
+
             self.update_time_travel()
             self.charging_station.add_da_to_queue_inc(self)
 
@@ -232,14 +240,15 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.teleport(action)
         
         elif action == 'arrived':
-            self.change_station.remove_da_to_queue_inc(self)
+            self.charging_station.remove_da_to_queue_inc(self)
             self.charging_station.add_da_to_queue(self)
         
         elif action == 'wait':
             self.map.add_points_to_print((self.get_longitude(),self.get_latitude()),'y','+',20)
-            print("DA id: %d is charging on station %d" , self.id, self.charging_station.id())
+            print("DA id: %d is charging on station %d" , self.id, self.charging_station.id)
 
         elif action == 'return':
+            self.charging_station = None
             self.teleport(action)
         
         elif action == 'resume route':
@@ -259,8 +268,15 @@ class driver_assistant(geographic_agent.geographic_agent):
         
 
     def reconsider(self):
-        return any(self.proposals) and not self.is_car_charging()
+        if any(self.proposals) and not self.is_car_charging():
+            return True
         
+        if self.need_charge and self.charging_station == None:
+            print('I NEED CHARGE')
+            return True
+        
+        return False
+
     def agentReactiveDecision(self):
             self.teleport('move normaly')
 
@@ -280,7 +296,7 @@ class driver_assistant(geographic_agent.geographic_agent):
 
         if action == 'go to station':
             self.last_destination = self.destination
-            ch_node = self.charging_stations.get_closest_node()
+            ch_node = self.charging_station.get_node_position()
             route = nx.shortest_path(self.G, self.current_node, ch_node, weight='length')
             self.current_route = route
             self.destination = self.current_route[-1]
@@ -351,7 +367,12 @@ class driver_assistant(geographic_agent.geographic_agent):
       
     def low_battery(self):
         return self.battery <= self.battery_threshold 
+    
+    def update_charged(self, state):
+        self.is_charging = state
 
+    def is_car_charging(self):
+        return self.is_charging
     
     #
     #   Decide Station and Change Station
@@ -359,11 +380,12 @@ class driver_assistant(geographic_agent.geographic_agent):
 
     def decide(self):
         #Wort Wort Wort
-        worst_time_to_wait = 0 
-        worst_distance = 0 
-        worst_price = 0 
+        worst_time_to_wait = 1
+        worst_distance = 1
+        worst_price = 1
 
         #opt = (Time, Node, Price, CH_id)
+        print(self.options)
         for opt in self.options:
             #Calulate worst time
             if opt[0] >= worst_time_to_wait:
@@ -378,7 +400,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             
         ch_ratings = {}
         for opt in self.options:    
-            relative_time_to_wait = 1/(opt[0]/worst_time_to_wait)  
+            relative_time_to_wait = 1/((opt[0]+1)/worst_time_to_wait)  
             
             dist = calculate_distance(self.G, opt[1], self.current_node)
             relative_distance = 1/(dist/worst_distance)
@@ -386,7 +408,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             relative_price = 1/(opt[2]/worst_price)
 
             station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
-            if self.is_possible_to_arrive(dist):
+            if self.is_possible_to_arrive(dist) and (dist != -1):
                 ch_ratings[opt[3]] = station_rating
             else:
                 ch_ratings[opt[3]] = 0
@@ -432,9 +454,9 @@ class driver_assistant(geographic_agent.geographic_agent):
 
     def change_station(self):
         #Wort Wort Wort
-        worst_time_to_wait = 0 
-        worst_distance = 0 
-        worst_price = 0 
+        worst_time_to_wait = 1
+        worst_distance = 1
+        worst_price = 1
 
         #opt = (Time, Node, Price, CH_id)
         for opt in self.proposals:
@@ -459,7 +481,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             relative_price = 1/(opt[2]/worst_price)
 
             station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance
-            if self.is_possible_to_arrive(dist):
+            if self.is_possible_to_arrive(dist) and (dist != -1):
                 ch_ratings[opt[3]] = station_rating
             else:
                 ch_ratings[opt[3]] = 0
@@ -531,13 +553,9 @@ class driver_assistant(geographic_agent.geographic_agent):
             
     def receive_proposal(self, proposal):
         self.proposals.append(proposal)
-
-    def update_charged(self, state):
-        self.is_charging = state
-
-    def is_car_charging(self):
-        return self.is_charging
-    
+   
+    def is_possible_to_arrive(self, dist):
+        return True
 
 #            
 #           A U X I L I A R   F U N C T I O N S 
@@ -678,8 +696,13 @@ def agent_has_arrived(node1, node2):
     return node1 == node2
 
 def calculate_distance(G, node1, node2):
-    route = nx.shortest_path(G, node1, node2, weight='length')
-    return len(route)
+    try:
+        route = nx.shortest_path(G, node1, node2, weight='length')
+        return len(route)
+    except nx.exception.NodeNotFound:
+        return -1 
+    except nx.exception.NetworkXNoPath:
+        return -1
 
 def calculate_time(distance):
     return distance #Since agent travels one node per tick
