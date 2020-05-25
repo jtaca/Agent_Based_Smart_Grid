@@ -49,7 +49,7 @@ class driver_assistant(geographic_agent.geographic_agent):
         #Environment View
         self.da_list = []  #List of Driver Assistants
         self.ch_list = []  #List of Charger Handlers
-        self.emotional_dict = self.init_emotional_dict()
+        self.emotional_dict = {}
     
         self.options = []
         self.charging_station = None #CH of choice
@@ -80,6 +80,7 @@ class driver_assistant(geographic_agent.geographic_agent):
     #Initialize the Charger Handlers List
     def init_ch_list(self, ch):
         self.ch_list = ch
+        self.init_emotional_dict()
 
     #Initialize the emotional dict
     def init_emotional_dict(self):
@@ -90,8 +91,10 @@ class driver_assistant(geographic_agent.geographic_agent):
             self.emotional_dict[ch.id] = emotions[i]
             i += 1
 
+        
     def generate_emotions(self):
         emotions = np.random.randint(low=0, high=5, size=len(self.ch_list))
+        return emotions
 
     #
     # 
@@ -304,7 +307,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             return True
         
         if self.need_charge and self.charging_station == None:
-            print('I NEED CHARGE')
+            print('DA: needs to charge')
             return True
         
         return False
@@ -376,7 +379,6 @@ class driver_assistant(geographic_agent.geographic_agent):
         worst_price = 1
 
         #opt = (Time, Node, Price, CH_id)
-        print(self.options)
         for opt in self.options:
             #Calulate worst time
             if opt[0] >= worst_time_to_wait:
@@ -398,7 +400,7 @@ class driver_assistant(geographic_agent.geographic_agent):
             
             relative_price = 1/(opt[2]/worst_price)
 
-            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance + + self.emotional_dict[opt[3]]
+            station_rating = self.time_u * relative_time_to_wait + self.price_u * relative_price + self.distance_u * relative_distance + self.emotional_dict[opt[3]]
             if self.is_possible_to_arrive(dist):
                 ch_ratings[opt[3]] = station_rating
             
