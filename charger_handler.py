@@ -34,7 +34,6 @@ class charger_handler(geographic_agent.geographic_agent):
 		#negotiation/bid
 		self.da_queue = []
 		self.da_queue_inc = []
-		self.bid_result = -1
 		self.energy_wanted = 0
 		self.proposal = [0, self.map.get_closest_node(lng, lat), self.energy_price_buy, self.id]
 
@@ -55,7 +54,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		elif self.intention == 'negotiate_po':
 			return True
 		elif self.intention == 'give':
-			return self.energy_available > 0 and self.bid_result > 0
+			return self.energy_available > 0
 		elif self.intention == 'wait':
 			return True
 		else:
@@ -73,7 +72,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		elif action == 'negotiate_po':
 			return True
 		elif action == 'give':
-			return self.energy_available > 0 and self.bid_result > 0
+			return self.energy_available > 0
 		elif action == 'wait':
 			return True
 
@@ -165,10 +164,16 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	#action 'give'
 	def charge_da(self):
+		X = 10
 		da = self.da_queue[0]
-		energy_da = self.bid_result
-		self.energy_available -= self.bid_result
-		da.give_energy(energy_da)
+		if(da.battery_needed <= 0):
+			self.da_queue.pop(0)
+			da.update_charged(False)
+		else:
+			da.update_charge(True)
+		da.battery += X
+		da.battery_needed -= X
+		self.energy_available -= X	
 		
 	
 	# DA calls this when needs energy
