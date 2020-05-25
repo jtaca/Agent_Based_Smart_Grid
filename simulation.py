@@ -240,6 +240,7 @@ class simulation():
         self.cost_of_system = []
         self.revenue_of_system = []
         self.profit = [] #costof mantaining vs money made
+
         self.number_cars_charging =[]
         self.number_cars_without_energy = []
 
@@ -249,6 +250,9 @@ class simulation():
             self.cost_of_system.append(0)
             self.revenue_of_system.append(0)
             self.profit.append(0)
+
+            self.number_cars_charging.append(0)
+            self.number_cars_without_energy.append(0)
             
             self.number_of_inactive_stations.append(self.number_stations)
             aux = []
@@ -320,12 +324,16 @@ class simulation():
         aux_worst_list = []
         for i in self.time_to_charge_worst_case:
             aux_worst_list.append(max(i))
+        print('revenue')
+        print(self.revenue_of_system)
+        print('cost')
+        print(self.cost_of_system)
         for i in range(self.steps):
-            self.profit [i] = (self.revenue_of_system[i]-self.cost_of_system[i])*1-settings.tax
+            self.profit [i] = (self.revenue_of_system[i]*(1-settings.tax))-self.cost_of_system[i]
         print(self.profit)
         self.plot(list(range(self.steps)), self.profit,'Step', 'Profit after Tax')
         self.plot(list(range(self.steps)), aux_worst_list,'Step', 'Worst time to wait')
-        
+
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
