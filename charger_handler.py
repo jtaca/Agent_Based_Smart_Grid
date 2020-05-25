@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick, charger_flow):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -17,6 +17,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.simulation = simulation
 		self.node = self.map.get_closest_node(lng, lat)
 		self.isPoweredOn = True
+		self.charger_flow = charger_flow
 
 
 		#if collective CH:
@@ -164,7 +165,8 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	#action 'give'
 	def charge_da(self):
-		X = 10
+		print('CH '+str(self.id)+': just charged someone')
+		X = self.charger_flow #settings.charger_flow
 		da = self.da_queue[0]
 		if(da.battery_needed <= 0):
 			self.da_queue.pop(0)
@@ -174,6 +176,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		da.battery += X
 		da.battery_needed -= X
 		self.energy_available -= X	
+		self.simulation.cost_of_system[self.simulation.current_step]+= X*self.energy_price_sell
 		
 	
 	# DA calls this when needs energy
@@ -204,6 +207,11 @@ class charger_handler(geographic_agent.geographic_agent):
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'y', 'v',20)
 			if(self.simulation.number_of_inactive_stations[self.simulation.current_step] > 0):
 				self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
+				
+				if self.energy_available >= self.cost_per_tick:
+					self.energy_available -= self.cost_per_tick
+					self.simulation.cost_of_system[self.simulation.current_step]+= self.cost_per_tick*self.energy_price_buy
+				
 			self.isPoweredOn = True
 		else:
 			self.isPoweredOn = False
