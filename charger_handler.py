@@ -4,7 +4,7 @@ import math
 
 class charger_handler(geographic_agent.geographic_agent):
 
-	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick):
+	def __init__(self, lat, lng, map, energy_price_buy, energy_price_sell, id, simulation, cost_per_tick, charger_flow):
 		geographic_agent.geographic_agent.__init__(self,lat,lng,'r', 'v',20,2)
 		self.name = "charger handler"
 		self.id = id
@@ -17,6 +17,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.simulation = simulation
 		self.node = self.map.get_closest_node(lng, lat)
 		self.isPoweredOn = True
+		self.charger_flow = charger_flow
 
 
 		#if collective CH:
@@ -34,7 +35,6 @@ class charger_handler(geographic_agent.geographic_agent):
 		#negotiation/bid
 		self.da_queue = []
 		self.da_queue_inc = []
-		self.bid_result = -1
 		self.energy_wanted = 0
 		self.proposal = [0, self.map.get_closest_node(lng, lat), self.energy_price_buy, self.id]
 
@@ -55,7 +55,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		elif self.intention == 'negotiate_po':
 			return True
 		elif self.intention == 'give':
-			return self.energy_available > 0 and self.bid_result > 0
+			return self.energy_available > 0
 		elif self.intention == 'wait':
 			return True
 		else:
@@ -73,7 +73,7 @@ class charger_handler(geographic_agent.geographic_agent):
 		elif action == 'negotiate_po':
 			return True
 		elif action == 'give':
-			return self.energy_available > 0 and self.bid_result > 0
+			return self.energy_available > 0
 		elif action == 'wait':
 			return True
 
@@ -129,6 +129,7 @@ class charger_handler(geographic_agent.geographic_agent):
 
 
 	def act(self):
+		self.update_wait_time()
 		if len(self.plan) > 0 and self.succeededIntention() and not self.impossibleIntention():
 			while len(self.plan)>0:
 				action = self.plan.pop(0)
@@ -164,10 +165,18 @@ class charger_handler(geographic_agent.geographic_agent):
 	'''
 	#action 'give'
 	def charge_da(self):
+		print('CH '+str(self.id)+': just charged someone')
+		X = self.charger_flow #settings.charger_flow
 		da = self.da_queue[0]
-		energy_da = self.bid_result
-		self.energy_available -= self.bid_result
-		da.give_energy(energy_da)
+		if(da.battery_needed <= 0):
+			self.da_queue.pop(0)
+			da.update_charged(False)
+		else:
+			da.update_charge(True)
+		da.battery += X
+		da.battery_needed -= X
+		self.energy_available -= X	
+		self.simulation.cost_of_system[self.simulation.current_step]+= X*self.energy_price_sell
 		
 	
 	# DA calls this when needs energy
@@ -196,7 +205,13 @@ class charger_handler(geographic_agent.geographic_agent):
 		self.energy_available += energy
 		if self.energy_available > 0:
 			self.simulation.map1.add_points_to_print((self.get_longitude(),self.get_latitude()),'y', 'v',20)
-			self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
+			if(self.simulation.number_of_inactive_stations[self.simulation.current_step] > 0):
+				self.simulation.number_of_inactive_stations[self.simulation.current_step] = self.simulation.number_of_inactive_stations[self.simulation.current_step] -1
+				
+				if self.energy_available >= self.cost_per_tick:
+					self.energy_available -= self.cost_per_tick
+					self.simulation.cost_of_system[self.simulation.current_step]+= self.cost_per_tick*self.energy_price_buy
+				
 			self.isPoweredOn = True
 		else:
 			self.isPoweredOn = False
@@ -215,6 +230,8 @@ class charger_handler(geographic_agent.geographic_agent):
 		time = 0
 		for da in self.da_queue_inc:
 			time += da.time_of_travel
+		#print('time of wait: '+str(time))
+		self.simulation.time_to_charge_worst_case[self.simulation.current_step][self.id] = time
 		return time
 
 	def report_charge_time(self): #for each vehicle
