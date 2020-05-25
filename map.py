@@ -217,6 +217,16 @@ class map:
         return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
 
 
+        def get_closest_node(self, lng, lat ):
+
+            geom, u, v, marosca = ox.get_nearest_edge(self.G, (lat, lng))
+            nn = min((u, v), key=lambda n: ox.great_circle_vec(lat, lng, self.G.nodes[n]['y'], self.G.nodes[n]['x']))
+
+            #print("random_point: "+lat+" , "+lng)
+
+            return self.G.nodes[nn]['x'], self.G.nodes[nn]['y']
+
+
     def clean_map(self):
         ec = ['grey' if data['oneway'] else '#e0e0e0' for u, v, key, data in self.G.edges(keys=True, data=True)]
         self.fig, self.ax = ox.plot_graph(self.G, fig_height=settings.fig_height, node_size=0, edge_color=ec, 
