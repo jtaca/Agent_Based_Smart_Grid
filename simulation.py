@@ -11,6 +11,7 @@ from PyQt5.QtCore import QEventLoop
 from PyQt5.QtCore import QTimer
 from matplotlib import pyplot as plt
 import statistics
+from numpy import zeros
 
 
 class simulation():
@@ -51,10 +52,12 @@ class simulation():
         lng, lat = map1.get_random_point()
         d = power_operative.power_operative(lat,lng, self.storage_available, self)
         self.agent_list.append(d)
+        self.po = d
 
         #lng, lat = map1.get_random_point()
         a = energy_broker.energy_broker(settings.point[0],settings.point[1],self.step_of_disaster,self.total_energy_of_tick, self.total_evergy_of_simulation, self,  self.step_of_redistribuition, self.max_flactuation, self.min_flactuation)
         self.agent_list.append(a)
+        self.eb = a
 
         map1.add_agents(self.agent_list)
         for agent in self.agent_list:
@@ -184,8 +187,11 @@ class simulation():
         self.prev_step = -1
         self.architecture = settings.architecture
         self.map1 = None
+        self.po = None
+        self.eb = None
 
         #stats for simulation results
+        self.po_power =[]
         self.profit_margin = [] #costof mantaining vs money made
         self.number_of_inactive_stations = []
         self.time_to_charge_worst_case =[]
@@ -193,17 +199,23 @@ class simulation():
         self.number_comunications = []
         #has values per each tick/step
         self.energy_history = []
-    
+        
+         
+        #get_time_of_wait
+        
+   
 
         
 
         pass
 
     def start_simulation(self,map1,gui):
-        self.architecture = "Test"
+        #self.architecture = "Test"
+        
         self.current_step = 0
         #c = geographic_agent.geographic_agent(38.7414116,-9.143627785022142)
         #print(b.get_latitude())
+        gui.disp_architecture.setText(settings.architecture)
         gui.disp_vehicles.setText(str(self.number_vehicles))
         gui.disp_stations.setText(str(self.number_stations))
         gui.disp_priority.setText(str(self.number_priority_vehicles))
@@ -212,6 +224,8 @@ class simulation():
         gui.disp_outages.setText(str(self.number_disasters)+" next: "+listToStr)
         self.agent_list = []
         self.map1 = map1
+        for i in range(self.steps):
+            self.number_of_inactive_stations.append(self.number_stations)
 
     def do_step(self):
         self.do_step_arg = True
@@ -230,14 +244,20 @@ class simulation():
         if (not self.stop_tog or self.do_step_arg) and self.prev_step != self.current_step:
             self.prev_step = self.current_step
             gui.disp_time.setText(str(self.current_step))
+            #self.po_power.append[self.po.]
             if self.current_step in self.step_of_disaster:
                 listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
                 gui.disp_outages.setText(str(self.number_disasters)+" next: "+listToStr)
 
             if self.current_step in self.step_of_redistribuition:
                 listToStr = ' '.join([str(elem) for elem in self.step_of_redistribuition])
-                gui.disp_redistribution.setText(str(self.step_of_redistribuition)+" next: "+listToStr)
-
+                gui.disp_redistribution.setText(str(self.number_redistribuition)+" next: "+listToStr)
+            gui.disp_architecture.setText(self.architecture)
+            try:
+                gui.disp_po_energy.setText(str(self.po_power[-1]))
+            except:
+               gui.disp_po_energy.setText("po_desconhecido")
+           
             gui.reload_map()
             self.do_step_arg = False
 
@@ -245,26 +265,31 @@ class simulation():
         gui.disp_time.setText("Complete")
         print("Complete")
 
-    def plot(self,x,y):
+    def plot(self,x,y, disc_x, disc_y):
         fig_energy, ax_energy = plt.subplots()
         #xerr = 5000*np.random.random_sample(20)
         #my_xticks = ['a', 'b', 'c', 'd']
         #plt.xticks(x, x)
-        yerr = (statistics.mean(y) /4)*np.random.random_sample(len(y))
+        yerr = (statistics.mean(y) /10)*np.random.random_sample(len(y))
         ax_energy.errorbar(x, y,yerr=yerr,fmt='-o',marker='s', mfc='blue',
          mec='green',  ecolor='r')
         plt.axis([0, max(x), 0, (max(y)+max(yerr))])
-        plt.ylabel('Energy available from source')
-        plt.xlabel('Step')
+        plt.ylabel(disc_y)
+        plt.xlabel(disc_x)
         #plt.show()
-        plt.savefig('graphs/Energy_Available_history.png')
+        plt.savefig('graphs/'+str(self.graph_n)+'.png')
+        self.graph_n +=1
 
     def graph(self):
+        self.graph_n = 0
+        print(self.number_of_inactive_stations)
+        print(self.po_power)
         for agent in self.agent_list:
             if agent.name == "energy broker":
                 self.energy_history = agent.energy_history
                 print(len(self.energy_history))
-                self.plot(list(range(self.steps)), self.energy_history)
+                self.plot(list(range(self.steps)), self.energy_history,'Step', 'Energy available from source')
+                
                 break
             else:
                 self.energy_history = "energy_history not found"
