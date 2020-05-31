@@ -280,6 +280,9 @@ class simulation():
         if (not self.stop_tog or self.do_step_arg) and self.prev_step != self.current_step:
             self.prev_step = self.current_step
             gui.disp_time.setText(str(self.current_step))
+
+           
+
             #self.po_power.append[self.po.]
             if self.current_step in self.step_of_disaster:
                 listToStr = ' '.join([str(elem) for elem in self.step_of_disaster])
@@ -289,6 +292,12 @@ class simulation():
                 listToStr = ' '.join([str(elem) for elem in self.step_of_redistribuition])
                 gui.disp_redistribution.setText(str(self.number_redistribuition)+" next: "+listToStr)
             gui.disp_architecture.setText(self.architecture)
+
+            if self.current_step <len(self.number_cars_charging):
+                gui.disp_car_charging.setText(str(self.number_cars_charging[self.current_step]))
+                gui.disp_worst_time.setText(str(max(self.time_to_charge_worst_case[self.current_step])))
+                gui.disp_car_wo_energy.setText(str(self.number_cars_without_energy[self.current_step]))
+
             try:
                 gui.disp_po_energy.setText(str(self.po_power[-1]))
             except:
