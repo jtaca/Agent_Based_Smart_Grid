@@ -10,7 +10,7 @@ nr_priority_vehicles = 3 # random.choice(range(self.number_vehicles)) #7
 nr_disasters = 6
 nr_redistribution = 5
 
-draw_map = False #False #for way way better performance
+draw_map = True #False #for way way better performance
 architecture = "N DA N CH \n 1 PO 1 EB"
 
 max_source_flactuation = 1
@@ -33,7 +33,9 @@ tax = 0.4
 
 #map
 point = (38.736828, -9.138222) # IST
-#point = (40.71427, -74.00597)
+#point = (40.71427, -74.00597) #ny
+#point = (48.855216, 2.345615) #paris
+#point = (51.501134, -0.141112) # london
 
 place = 'Alameda_buildings'
 network_type='drive'
@@ -51,4 +53,5 @@ street_widths = {'footway' : 0.5,
                 'residential' : 3,
                 'primary' : 5,
                 'motorway' : 6}
+
 
